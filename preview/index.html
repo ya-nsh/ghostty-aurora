@@ -148,12 +148,7 @@
         <p>Generated shaders compiled in WebGL with ambient-only motion.</p>
       </div>
       <div class="toolbar">
-        <div class="controls" role="group" aria-label="Variant">
-          <button type="button" data-variant="lite" aria-pressed="false">Lite</button>
-          <button type="button" data-variant="aurora" aria-pressed="true">Aurora</button>
-          <button type="button" data-variant="rich" aria-pressed="false">Rich</button>
-          <button type="button" data-variant="polaris" aria-pressed="false">Polaris</button>
-        </div>
+        <div class="controls" role="group" aria-label="Variant" data-variant-controls></div>
         <div class="controls" role="group" aria-label="Daypart">
           <button type="button" data-daypart="evening" aria-pressed="true">Evening</button>
           <button type="button" data-daypart="morning" aria-pressed="false">Morning</button>
@@ -170,18 +165,21 @@
     <div id="status" class="status">Loading shader...</div>
   </main>
 
-  <script>
+  <script type="module">
+    import { variants as variantList } from "../src/variants.mjs";
+
     const canvas = document.querySelector("#preview");
     const statusEl = document.querySelector("#status");
-    const variantButtons = [...document.querySelectorAll("button[data-variant]")];
+    const variantControls = document.querySelector("[data-variant-controls]");
     const daypartButtons = [...document.querySelectorAll("button[data-daypart]")];
 
-    const variants = {
-      lite: { file: "aurora-lite.glsl", label: "Lite" },
-      aurora: { file: "aurora.glsl", label: "Aurora" },
-      rich: { file: "aurora-rich.glsl", label: "Rich" },
-      polaris: { file: "polaris.glsl", label: "Polaris" }
-    };
+    const variants = Object.fromEntries(variantList.map((variant) => [variant.id, variant]));
+
+    variantControls.innerHTML = variantList.map((variant) => (
+      `<button type="button" data-variant="${variant.id}" aria-pressed="${variant.id === "aurora"}">${variant.label}</button>`
+    )).join("");
+
+    const variantButtons = [...document.querySelectorAll("button[data-variant]")];
 
     const vertexSource = `#version 300 es
       in vec2 position;
