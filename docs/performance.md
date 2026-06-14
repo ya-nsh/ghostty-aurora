@@ -11,6 +11,10 @@ The main cost knobs are:
 - `STARS_ENABLED`: faint stars add a small amount of extra work.
 - Window size: larger terminal windows shade more pixels.
 
+The shader keeps text readable from the existing base terminal sample and uses derivative-based edge detection for glyph protection. That avoids extra neighbor texture samples while still fading the aurora away from bright text and hard glyph edges.
+
+The current visual model prioritizes realistic layered arcs and soft curtain texture. Performance tuning should preserve narrow ribbon profiles first, then adjust layer counts, FBM octaves, haze, and intensity.
+
 ## Relative Tiers
 
 Low:
@@ -61,4 +65,4 @@ Lowering intensity does not reduce shader work by itself, but it can make a chea
 
 ## Variant Development Notes
 
-When adding variants, prefer changing palette, intensity, speed, and haze before increasing `RIBBON_LAYERS` or `FBM_OCTAVES`. If a variant enables stars, keep the star threshold high and the intensity low unless the variant is intentionally a showcase mode.
+When adding variants, prefer changing palette, intensity, speed, curtain strength, and haze before increasing `RIBBON_LAYERS` or `FBM_OCTAVES`. If a variant enables stars, keep the star threshold high and the intensity low unless the variant is intentionally a showcase mode. Avoid combining the highest layer counts with the highest octave counts; that is the fastest way to make a variant expensive again.

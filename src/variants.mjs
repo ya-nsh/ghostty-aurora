@@ -140,14 +140,14 @@ const palettes = {
 };
 
 const defaults = {
-  AURORA_INTENSITY: "0.62",
+  AURORA_INTENSITY: "0.50",
   RIBBON_SPEED: "0.035",
   RIBBON_SCALE: "1.00",
   TEXT_PROTECT: "0.88",
   RIBBON_LAYERS: "5",
-  FBM_OCTAVES: "4",
-  CURTAIN_STRENGTH: "0.78",
-  HAZE_STRENGTH: "0.110",
+  FBM_OCTAVES: "3",
+  CURTAIN_STRENGTH: "0.82",
+  HAZE_STRENGTH: "0.060",
   STAR_INTENSITY: "0.0",
   NORTH_STAR_INTENSITY: "0.0",
   STARS_ENABLED: "0",
@@ -175,14 +175,14 @@ export const variants = [
     description: "Calmer, cheaper, and extra conservative around text.",
     performanceTier: "low",
     values: {
-      AURORA_INTENSITY: "0.46",
+      AURORA_INTENSITY: "0.40",
       RIBBON_SPEED: "0.028",
       RIBBON_SCALE: "0.92",
       TEXT_PROTECT: "0.92",
       RIBBON_LAYERS: "3",
       FBM_OCTAVES: "3",
       CURTAIN_STRENGTH: "0.58",
-      HAZE_STRENGTH: "0.070"
+      HAZE_STRENGTH: "0.040"
     }
   }),
   variant({
@@ -193,14 +193,14 @@ export const variants = [
     description: "Aurora-only, low haze, and very calm for daily use.",
     performanceTier: "low",
     values: {
-      AURORA_INTENSITY: "0.38",
+      AURORA_INTENSITY: "0.32",
       RIBBON_SPEED: "0.022",
       RIBBON_SCALE: "0.86",
       TEXT_PROTECT: "0.94",
       RIBBON_LAYERS: "2",
       FBM_OCTAVES: "3",
       CURTAIN_STRENGTH: "0.42",
-      HAZE_STRENGTH: "0.030"
+      HAZE_STRENGTH: "0.020"
     }
   }),
   variant({
@@ -219,14 +219,14 @@ export const variants = [
     description: "Deeper curtains and faint static stars.",
     performanceTier: "high",
     values: {
-      AURORA_INTENSITY: "0.74",
+      AURORA_INTENSITY: "0.62",
       RIBBON_SPEED: "0.039",
       RIBBON_SCALE: "1.08",
       TEXT_PROTECT: "0.86",
-      RIBBON_LAYERS: "6",
-      FBM_OCTAVES: "5",
+      RIBBON_LAYERS: "5",
+      FBM_OCTAVES: "4",
       CURTAIN_STRENGTH: "0.96",
-      HAZE_STRENGTH: "0.145",
+      HAZE_STRENGTH: "0.090",
       STAR_INTENSITY: "0.075",
       STARS_ENABLED: "1"
     }
@@ -240,13 +240,13 @@ export const variants = [
     performanceTier: "medium",
     palette: palettes.polaris,
     values: {
-      AURORA_INTENSITY: "0.54",
+      AURORA_INTENSITY: "0.46",
       RIBBON_SPEED: "0.026",
       RIBBON_SCALE: "0.98",
       TEXT_PROTECT: "0.90",
       RIBBON_LAYERS: "4",
       CURTAIN_STRENGTH: "0.70",
-      HAZE_STRENGTH: "0.085",
+      HAZE_STRENGTH: "0.050",
       POLARIS_MODE: "1"
     }
   }),
@@ -259,12 +259,12 @@ export const variants = [
     performanceTier: "medium",
     palette: palettes.arctic,
     values: {
-      AURORA_INTENSITY: "0.58",
+      AURORA_INTENSITY: "0.48",
       RIBBON_SPEED: "0.030",
       RIBBON_SCALE: "1.02",
       RIBBON_LAYERS: "5",
       CURTAIN_STRENGTH: "0.82",
-      HAZE_STRENGTH: "0.100"
+      HAZE_STRENGTH: "0.060"
     }
   }),
   variant({
@@ -276,14 +276,14 @@ export const variants = [
     performanceTier: "high",
     palette: palettes.nebula,
     values: {
-      AURORA_INTENSITY: "0.70",
+      AURORA_INTENSITY: "0.60",
       RIBBON_SPEED: "0.038",
       RIBBON_SCALE: "1.10",
       TEXT_PROTECT: "0.87",
-      RIBBON_LAYERS: "6",
-      FBM_OCTAVES: "5",
+      RIBBON_LAYERS: "5",
+      FBM_OCTAVES: "4",
       CURTAIN_STRENGTH: "0.94",
-      HAZE_STRENGTH: "0.135",
+      HAZE_STRENGTH: "0.085",
       STAR_INTENSITY: "0.040",
       STARS_ENABLED: "1"
     }
@@ -297,13 +297,13 @@ export const variants = [
     performanceTier: "medium",
     palette: palettes.fjord,
     values: {
-      AURORA_INTENSITY: "0.52",
+      AURORA_INTENSITY: "0.44",
       RIBBON_SPEED: "0.026",
       RIBBON_SCALE: "0.96",
       TEXT_PROTECT: "0.90",
       RIBBON_LAYERS: "4",
       CURTAIN_STRENGTH: "0.72",
-      HAZE_STRENGTH: "0.080"
+      HAZE_STRENGTH: "0.050"
     }
   }),
   variant({
@@ -315,14 +315,14 @@ export const variants = [
     performanceTier: "low",
     palette: palettes.midnight,
     values: {
-      AURORA_INTENSITY: "0.42",
+      AURORA_INTENSITY: "0.36",
       RIBBON_SPEED: "0.020",
       RIBBON_SCALE: "0.92",
       TEXT_PROTECT: "0.93",
       RIBBON_LAYERS: "3",
       FBM_OCTAVES: "3",
       CURTAIN_STRENGTH: "0.56",
-      HAZE_STRENGTH: "0.055"
+      HAZE_STRENGTH: "0.035"
     }
   }),
   variant({
@@ -334,13 +334,13 @@ export const variants = [
     performanceTier: "medium",
     palette: palettes.solar,
     values: {
-      AURORA_INTENSITY: "0.57",
+      AURORA_INTENSITY: "0.48",
       RIBBON_SPEED: "0.034",
       RIBBON_SCALE: "1.00",
       TEXT_PROTECT: "0.89",
       RIBBON_LAYERS: "5",
       CURTAIN_STRENGTH: "0.76",
-      HAZE_STRENGTH: "0.095"
+      HAZE_STRENGTH: "0.055"
     }
   }),
   variant({
@@ -352,12 +352,12 @@ export const variants = [
     performanceTier: "medium",
     palette: palettes.winter,
     values: {
-      AURORA_INTENSITY: "0.55",
+      AURORA_INTENSITY: "0.46",
       RIBBON_SPEED: "0.027",
       RIBBON_SCALE: "0.98",
       RIBBON_LAYERS: "4",
       CURTAIN_STRENGTH: "0.74",
-      HAZE_STRENGTH: "0.080"
+      HAZE_STRENGTH: "0.050"
     }
   }),
   variant({
@@ -369,12 +369,12 @@ export const variants = [
     performanceTier: "medium",
     palette: palettes.spring,
     values: {
-      AURORA_INTENSITY: "0.56",
+      AURORA_INTENSITY: "0.48",
       RIBBON_SPEED: "0.034",
       RIBBON_SCALE: "0.98",
       RIBBON_LAYERS: "5",
       CURTAIN_STRENGTH: "0.76",
-      HAZE_STRENGTH: "0.092"
+      HAZE_STRENGTH: "0.055"
     }
   }),
   variant({
@@ -386,13 +386,13 @@ export const variants = [
     performanceTier: "medium",
     palette: palettes.summerNight,
     values: {
-      AURORA_INTENSITY: "0.60",
+      AURORA_INTENSITY: "0.50",
       RIBBON_SPEED: "0.032",
       RIBBON_SCALE: "1.04",
       TEXT_PROTECT: "0.89",
       RIBBON_LAYERS: "5",
       CURTAIN_STRENGTH: "0.82",
-      HAZE_STRENGTH: "0.105",
+      HAZE_STRENGTH: "0.060",
       STAR_INTENSITY: "0.030",
       STARS_ENABLED: "1"
     }
@@ -406,13 +406,13 @@ export const variants = [
     performanceTier: "medium",
     palette: palettes.autumn,
     values: {
-      AURORA_INTENSITY: "0.54",
+      AURORA_INTENSITY: "0.46",
       RIBBON_SPEED: "0.030",
       RIBBON_SCALE: "0.98",
       TEXT_PROTECT: "0.90",
       RIBBON_LAYERS: "4",
       CURTAIN_STRENGTH: "0.72",
-      HAZE_STRENGTH: "0.082"
+      HAZE_STRENGTH: "0.050"
     }
   }),
   variant({
@@ -424,14 +424,14 @@ export const variants = [
     performanceTier: "low",
     palette: palettes.deepWinter,
     values: {
-      AURORA_INTENSITY: "0.40",
+      AURORA_INTENSITY: "0.34",
       RIBBON_SPEED: "0.018",
       RIBBON_SCALE: "0.90",
       TEXT_PROTECT: "0.94",
       RIBBON_LAYERS: "3",
       FBM_OCTAVES: "3",
       CURTAIN_STRENGTH: "0.52",
-      HAZE_STRENGTH: "0.045"
+      HAZE_STRENGTH: "0.030"
     }
   }),
   variant({
@@ -462,13 +462,13 @@ export const variants = [
     performanceTier: "medium",
     palette: palettes.themeDark,
     values: {
-      AURORA_INTENSITY: "0.56",
+      AURORA_INTENSITY: "0.48",
       RIBBON_SPEED: "0.032",
       RIBBON_SCALE: "1.00",
       TEXT_PROTECT: "0.90",
       RIBBON_LAYERS: "5",
       CURTAIN_STRENGTH: "0.76",
-      HAZE_STRENGTH: "0.092"
+      HAZE_STRENGTH: "0.055"
     }
   }),
   variant({
@@ -480,13 +480,13 @@ export const variants = [
     performanceTier: "medium",
     palette: palettes.themeWarm,
     values: {
-      AURORA_INTENSITY: "0.50",
+      AURORA_INTENSITY: "0.42",
       RIBBON_SPEED: "0.028",
       RIBBON_SCALE: "0.96",
       TEXT_PROTECT: "0.92",
       RIBBON_LAYERS: "4",
       CURTAIN_STRENGTH: "0.66",
-      HAZE_STRENGTH: "0.070"
+      HAZE_STRENGTH: "0.040"
     }
   }),
   variant({
