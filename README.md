@@ -9,9 +9,10 @@ Ghostty Aurora paints soft procedural ribbons behind your terminal text. It ship
 ## Variants
 
 - `aurora-lite.glsl`: calmer, cheaper, and extra conservative around text.
+- `aurora-minimal.glsl`: aurora-only, low haze, and very calm for daily use.
 - `aurora.glsl`: balanced default and the recommended daily driver.
 - `aurora-rich.glsl`: deeper curtains and faint static stars.
-- `polaris.glsl`: balanced aurora with a darker north-star sky.
+- `polaris.glsl`: cold no-star aurora with a darker polar palette.
 
 Polaris is a separate shader file, not an in-terminal runtime toggle. Ghostty selects shaders through config, so switching variants means changing the configured shader path and reloading config.
 

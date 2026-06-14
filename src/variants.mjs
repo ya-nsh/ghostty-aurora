@@ -22,6 +22,28 @@ export const variants = [
     }
   },
   {
+    id: "minimal",
+    label: "Minimal",
+    category: "core",
+    file: "aurora-minimal.glsl",
+    description: "Aurora-only, low haze, and very calm for daily use.",
+    performanceTier: "low",
+    values: {
+      AURORA_INTENSITY: "0.38",
+      RIBBON_SPEED: "0.022",
+      RIBBON_SCALE: "0.86",
+      TEXT_PROTECT: "0.94",
+      RIBBON_LAYERS: "2",
+      FBM_OCTAVES: "3",
+      CURTAIN_STRENGTH: "0.42",
+      HAZE_STRENGTH: "0.030",
+      STAR_INTENSITY: "0.0",
+      NORTH_STAR_INTENSITY: "0.0",
+      STARS_ENABLED: "0",
+      POLARIS_MODE: "0"
+    }
+  },
+  {
     id: "aurora",
     label: "Aurora",
     category: "core",
@@ -70,7 +92,7 @@ export const variants = [
     label: "Polaris",
     category: "core",
     file: "polaris.glsl",
-    description: "Balanced aurora with a darker north-star sky.",
+    description: "Cold no-star aurora with a darker polar palette.",
     performanceTier: "medium",
     values: {
       AURORA_INTENSITY: "0.54",
@@ -81,9 +103,9 @@ export const variants = [
       FBM_OCTAVES: "4",
       CURTAIN_STRENGTH: "0.70",
       HAZE_STRENGTH: "0.085",
-      STAR_INTENSITY: "0.20",
-      NORTH_STAR_INTENSITY: "0.18",
-      STARS_ENABLED: "1",
+      STAR_INTENSITY: "0.0",
+      NORTH_STAR_INTENSITY: "0.0",
+      STARS_ENABLED: "0",
       POLARIS_MODE: "1"
     }
   }
