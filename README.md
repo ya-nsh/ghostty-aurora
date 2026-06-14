@@ -131,6 +131,32 @@ bin/ghostty-aurora intensity reset
 
 `intensity set` writes `config/active.glsl`, patches only `AURORA_INTENSITY`, and points `config/ghostty-aurora.conf` at that local shader. `config/active.glsl` is ignored by git. Running `bin/ghostty-aurora use <variant>` without `--intensity` returns to the committed shader file for that variant.
 
+## Focused Breathing
+
+Aurora can gently lift while the Ghostty surface is focused and settle down when the surface is blurred. The effect uses Ghostty's focus uniforms, `iFocus` and `iTimeFocus`, and stays behind the existing readability mask so terminal text remains protected.
+
+Use the browser preview's Focused and Blurred buttons to emulate the behavior:
+
+```sh
+python3 -m http.server 8765
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8765/preview/
+```
+
+To test this branch in Ghostty:
+
+```sh
+git checkout feature/focused-breathing
+node scripts/build-variants.mjs
+bin/ghostty-aurora use aurora
+```
+
+Reload Ghostty config after switching. Focus and unfocus the window to check that the aurora breathes subtly without changing the text.
+
 ## Tuning
 
 Generated shader files can be edited directly for quick experiments, but durable changes should go in `src/aurora.template.glsl` and `scripts/build-variants.mjs`.

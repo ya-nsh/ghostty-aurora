@@ -38,6 +38,10 @@ const float CURTAIN_STRENGTH = @CURTAIN_STRENGTH@;
 const float HAZE_STRENGTH = @HAZE_STRENGTH@;
 const float STAR_INTENSITY = @STAR_INTENSITY@;
 const float NORTH_STAR_INTENSITY = @NORTH_STAR_INTENSITY@;
+const float FOCUS_BREATHING_ENABLED = @FOCUS_BREATHING_ENABLED@;
+const float FOCUS_BREATHING_AMOUNT = @FOCUS_BREATHING_AMOUNT@;
+const float FOCUS_WAKE_DURATION = @FOCUS_WAKE_DURATION@;
+const float BLUR_SETTLE_AMOUNT = @BLUR_SETTLE_AMOUNT@;
 
 const vec3 MORNING_A = @MORNING_A@;
 const vec3 MORNING_B = @MORNING_B@;
@@ -133,6 +137,17 @@ vec3 currentMood(float t) {
     return mood;
 }
 
+float focusBreathing(float t) {
+    float focused = float(iFocus);
+    float sinceFocus = max(t - iTimeFocus, 0.0);
+    float wake = exp(-sinceFocus / max(FOCUS_WAKE_DURATION, 0.001));
+    float breath = 0.5 + 0.5 * sin(t * 0.32);
+    float focusedLift = focused * FOCUS_BREATHING_AMOUNT * (0.35 + 0.65 * breath + 0.55 * wake);
+    float blurSettle = (1.0 - focused) * BLUR_SETTLE_AMOUNT;
+
+    return 1.0 + FOCUS_BREATHING_ENABLED * (focusedLift - blurSettle);
+}
+
 float ribbon(vec2 uv, float t, float layer, float nightCalm) {
     float speed = RIBBON_SPEED * mix(1.35, 0.45, nightCalm);
     float drift = t * speed * (0.75 + layer * 0.18);
@@ -224,9 +239,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     vec3 mood = currentMood(iTime);
     float nightCalm = mood.z;
-    float intensity = AURORA_INTENSITY * mix(1.0, 0.58, nightCalm);
-    vec3 lights = aurora(fieldUv, iTime, mood);
-    lights += stars(uv, iTime);
+    float focusBreath = focusBreathing(iTime);
+    float motionTime = iTime * mix(1.0, 1.06, sat(focusBreath - 1.0) * 5.0);
+    float intensity = AURORA_INTENSITY * mix(1.0, 0.58, nightCalm) * focusBreath;
+    vec3 lights = aurora(fieldUv, motionTime, mood);
+    lights += stars(uv, motionTime);
 
     float mask = readabilityMask(uv, base);
     float backgroundDepth = 1.0 - smoothstep(0.12, 0.74, dot(base, vec3(0.2126, 0.7152, 0.0722)));

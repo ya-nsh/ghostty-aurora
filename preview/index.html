@@ -155,6 +155,10 @@
           <button type="button" data-daypart="night" aria-pressed="false">Night</button>
           <button type="button" data-daypart="cycle" aria-pressed="false">Cycle</button>
         </div>
+        <div class="controls" role="group" aria-label="Focus">
+          <button type="button" data-focus="focused" aria-pressed="true">Focused</button>
+          <button type="button" data-focus="blurred" aria-pressed="false">Blurred</button>
+        </div>
       </div>
     </header>
 
@@ -172,6 +176,7 @@
     const statusEl = document.querySelector("#status");
     const variantControls = document.querySelector("[data-variant-controls]");
     const daypartButtons = [...document.querySelectorAll("button[data-daypart]")];
+    const focusButtons = [...document.querySelectorAll("button[data-focus]")];
 
     const variants = Object.fromEntries(variantList.map((variant) => [variant.id, variant]));
 
@@ -268,6 +273,8 @@
         uniform vec3 iResolution;
         uniform float iTime;
         uniform vec4 iDate;
+        uniform int iFocus;
+        uniform float iTimeFocus;
         out vec4 outColor;
         ${sourceForDaypart(source, daypart)}
         void main() {
@@ -336,6 +343,8 @@
 
       let activeVariant = "aurora";
       let activeDaypart = "evening";
+      let activeFocus = "focused";
+      let focusChangedAt = 0;
       let activeSource = "";
       let program;
       let locations;
@@ -371,6 +380,8 @@
           resolution: gl.getUniformLocation(program, "iResolution"),
           time: gl.getUniformLocation(program, "iTime"),
           date: gl.getUniformLocation(program, "iDate"),
+          focus: gl.getUniformLocation(program, "iFocus"),
+          timeFocus: gl.getUniformLocation(program, "iTimeFocus"),
           channel0: gl.getUniformLocation(program, "iChannel0")
         };
 
@@ -401,6 +412,16 @@
         });
       });
 
+      focusButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          activeFocus = button.dataset.focus;
+          focusChangedAt = performance.now() * 0.001;
+          focusButtons.forEach((focusButton) => {
+            focusButton.setAttribute("aria-pressed", String(focusButton.dataset.focus === activeFocus));
+          });
+        });
+      });
+
       await useSelection(activeVariant, activeDaypart);
 
       function frame(ms) {
@@ -414,6 +435,8 @@
         gl.uniform3f(locations.resolution, canvas.width, canvas.height, 1);
         gl.uniform1f(locations.time, t);
         gl.uniform4f(locations.date, 2026, 6, 14, 20 * 3600);
+        gl.uniform1i(locations.focus, activeFocus === "focused" ? 1 : 0);
+        gl.uniform1f(locations.timeFocus, focusChangedAt);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         requestAnimationFrame(frame);
       }
