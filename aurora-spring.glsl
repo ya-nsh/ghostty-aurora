@@ -33,7 +33,7 @@ const float NIGHT_MIX = 0.0;
 const float TEXT_PROTECT = 0.88;
 
 const int RIBBON_LAYERS = 5;
-const int FBM_OCTAVES = 4;
+const int FBM_OCTAVES = 3;
 const float CURTAIN_STRENGTH = 0.76;
 const float HAZE_STRENGTH = 0.092;
 const float STAR_INTENSITY = 0.0;
@@ -139,15 +139,15 @@ float ribbon(vec2 uv, float t, float layer, float nightCalm) {
     vec2 p = vec2(uv.x * (2.0 + layer * 0.65) * RIBBON_SCALE + drift,
                   uv.y * (2.8 + layer * 0.38) - layer * 3.1);
 
-    float large = fbm(p + vec2(0.0, drift * 0.55));
-    float small = fbm(p * 2.2 - vec2(drift * 0.70, 0.0));
-    float center = 0.18 + layer * 0.095 + 0.18 * large;
-    float width = 0.055 + 0.020 * small;
-    float band = exp(-pow((uv.y - center) / width, 2.0));
+    float field = fbm(p + vec2(0.0, drift * 0.40));
+    float center = 0.17 + layer * 0.095 + 0.16 * field;
+    float width = 0.060 + 0.018 * field;
+    float band = 1.0 - smoothstep(width * 0.55, width * 1.72, abs(uv.y - center));
 
-    float curtainNoise = fbm(vec2(uv.x * (12.0 + layer * 4.0) - drift * 8.0,
-                                  layer * 9.0 + t * 0.025));
-    float curtains = pow(0.28 + 0.72 * curtainNoise, mix(2.6, 1.8, CURTAIN_STRENGTH));
+    float curtainNoise = noise(vec2(uv.x * (11.0 + layer * 3.4) - drift * 6.2,
+                                    layer * 8.3 + t * 0.020));
+    float curtainShape = curtainNoise * (1.35 - 0.35 * curtainNoise);
+    float curtains = mix(0.52, curtainShape, CURTAIN_STRENGTH);
     float verticalFalloff = smoothstep(0.92, 0.15, uv.y) * smoothstep(-0.05, 0.20, uv.y);
 
     return band * curtains * verticalFalloff;
@@ -160,7 +160,7 @@ vec3 aurora(vec2 uv, float t, vec3 mood) {
     for (int i = 0; i < RIBBON_LAYERS; i++) {
         float fi = float(i);
         float r = ribbon(uv, t, fi, mood.z);
-        float phase = fract(fi * 0.27 + fbm(vec2(uv.x * 1.4 + t * 0.01, fi)));
+        float phase = fract(fi * 0.27 + uv.x * 0.18 + r * 0.24 + t * 0.006);
         color += palette(phase, mood) * r * (1.0 - fi * 0.10);
         glow += r;
     }
@@ -203,13 +203,10 @@ vec3 stars(vec2 uv, float t) {
 
 float readabilityMask(vec2 uv, vec3 base) {
     float luma = dot(base, vec3(0.2126, 0.7152, 0.0722));
-    vec2 px = 1.0 / iResolution.xy;
-    float lx = dot(texture(iChannel0, uv + vec2(px.x, 0.0)).rgb, vec3(0.2126, 0.7152, 0.0722));
-    float ly = dot(texture(iChannel0, uv + vec2(0.0, px.y)).rgb, vec3(0.2126, 0.7152, 0.0722));
-    float edge = max(abs(luma - lx), abs(luma - ly));
+    float edge = fwidth(luma);
 
     float brightText = smoothstep(0.32, 0.82, luma);
-    float glyphEdge = smoothstep(0.025, 0.14, edge);
+    float glyphEdge = smoothstep(0.020, 0.10, edge);
     float protect = max(brightText, glyphEdge * TEXT_PROTECT);
 
     return 1.0 - sat(protect);
