@@ -172,6 +172,14 @@ http://127.0.0.1:8765/preview/
 
 Use the variant buttons to switch between the core, preset, and seasonal shaders. Use the daypart buttons to preview morning, evening, night, or the `iTime` cycle.
 
+For a grid view of every generated shader, open:
+
+```text
+http://127.0.0.1:8765/preview/gallery.html
+```
+
+See [docs/performance.md](docs/performance.md) for relative shader cost notes and variant selection guidance.
+
 ## Troubleshooting
 
 - If the terminal goes black, remove or comment out the Aurora config line, reload Ghostty, and check the shader path.
