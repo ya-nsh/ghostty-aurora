@@ -38,6 +38,10 @@ const float CURTAIN_STRENGTH = 0.66;
 const float HAZE_STRENGTH = 0.070;
 const float STAR_INTENSITY = 0.0;
 const float NORTH_STAR_INTENSITY = 0.0;
+const float TYPING_WAKE_ENABLED = 1.0;
+const float TYPING_WAKE_AMOUNT = 0.090;
+const float TYPING_WAKE_DURATION = 1.8;
+const float TYPING_WAKE_SPEED_BOOST = 0.120;
 
 const vec3 MORNING_A = vec3(0.86, 0.90, 0.58);
 const vec3 MORNING_B = vec3(0.98, 0.50, 0.36);
@@ -133,6 +137,14 @@ vec3 currentMood(float t) {
     return mood;
 }
 
+float typingWake(float t) {
+    float changed = step(0.001, iTimeCursorChange);
+    float sinceChange = max(t - iTimeCursorChange, 0.0);
+    float pulse = exp(-sinceChange / max(TYPING_WAKE_DURATION, 0.001));
+
+    return TYPING_WAKE_ENABLED * changed * pulse;
+}
+
 float ribbon(vec2 uv, float t, float layer, float nightCalm) {
     float speed = RIBBON_SPEED * mix(1.35, 0.45, nightCalm);
     float drift = t * speed * (0.75 + layer * 0.18);
@@ -224,9 +236,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     vec3 mood = currentMood(iTime);
     float nightCalm = mood.z;
-    float intensity = AURORA_INTENSITY * mix(1.0, 0.58, nightCalm);
-    vec3 lights = aurora(fieldUv, iTime, mood);
-    lights += stars(uv, iTime);
+    float wake = typingWake(iTime);
+    float motionTime = iTime * (1.0 + wake * TYPING_WAKE_SPEED_BOOST);
+    float intensity = AURORA_INTENSITY * mix(1.0, 0.58, nightCalm) * (1.0 + wake * TYPING_WAKE_AMOUNT);
+    vec3 lights = aurora(fieldUv, motionTime, mood);
+    lights += stars(uv, motionTime);
 
     float mask = readabilityMask(uv, base);
     float backgroundDepth = 1.0 - smoothstep(0.12, 0.74, dot(base, vec3(0.2126, 0.7152, 0.0722)));

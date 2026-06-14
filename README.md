@@ -131,6 +131,32 @@ bin/ghostty-aurora intensity reset
 
 `intensity set` writes `config/active.glsl`, patches only `AURORA_INTENSITY`, and points `config/ghostty-aurora.conf` at that local shader. `config/active.glsl` is ignored by git. Running `bin/ghostty-aurora use <variant>` without `--intensity` returns to the committed shader file for that variant.
 
+## Typing Wake
+
+Aurora can softly wake after typing or cursor movement by using Ghostty's `iTimeCursorChange` uniform. The effect is intentionally global and atmospheric: it does not draw around the cursor, distort glyphs, shimmer text, or add a text input overlay in the preview.
+
+Use the browser preview's Wake button to emulate recent terminal activity:
+
+```sh
+python3 -m http.server 8765
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8765/preview/
+```
+
+To test this branch in Ghostty:
+
+```sh
+git checkout feature/typing-wake
+node scripts/build-variants.mjs
+bin/ghostty-aurora use aurora
+```
+
+Reload Ghostty config after switching. Type normally and check that the aurora lifts gently for a moment while text remains stable.
+
 ## Tuning
 
 Generated shader files can be edited directly for quick experiments, but durable changes should go in `src/aurora.template.glsl` and `scripts/build-variants.mjs`.
