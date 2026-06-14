@@ -96,6 +96,46 @@ const palettes = {
     EVENING_B: "vec3(0.24, 0.28, 0.78)",
     NIGHT_A: "vec3(0.02, 0.26, 0.30)",
     NIGHT_B: "vec3(0.03, 0.06, 0.22)"
+  },
+  themeOled: {
+    MORNING_A: "vec3(0.36, 0.88, 0.78)",
+    MORNING_B: "vec3(0.58, 0.50, 0.90)",
+    EVENING_A: "vec3(0.16, 0.72, 0.62)",
+    EVENING_B: "vec3(0.32, 0.30, 0.78)",
+    NIGHT_A: "vec3(0.02, 0.30, 0.26)",
+    NIGHT_B: "vec3(0.04, 0.06, 0.22)"
+  },
+  themeDark: {
+    MORNING_A: "vec3(0.62, 0.94, 0.86)",
+    MORNING_B: "vec3(0.78, 0.58, 0.96)",
+    EVENING_A: "vec3(0.24, 0.88, 0.68)",
+    EVENING_B: "vec3(0.42, 0.36, 0.92)",
+    NIGHT_A: "vec3(0.06, 0.42, 0.36)",
+    NIGHT_B: "vec3(0.12, 0.12, 0.42)"
+  },
+  themeWarm: {
+    MORNING_A: "vec3(0.86, 0.90, 0.58)",
+    MORNING_B: "vec3(0.98, 0.50, 0.36)",
+    EVENING_A: "vec3(0.48, 0.78, 0.48)",
+    EVENING_B: "vec3(0.80, 0.36, 0.62)",
+    NIGHT_A: "vec3(0.12, 0.36, 0.28)",
+    NIGHT_B: "vec3(0.30, 0.10, 0.28)"
+  },
+  themeTransparent: {
+    MORNING_A: "vec3(0.52, 0.90, 0.86)",
+    MORNING_B: "vec3(0.66, 0.62, 0.96)",
+    EVENING_A: "vec3(0.20, 0.72, 0.64)",
+    EVENING_B: "vec3(0.32, 0.42, 0.88)",
+    NIGHT_A: "vec3(0.04, 0.34, 0.32)",
+    NIGHT_B: "vec3(0.08, 0.12, 0.34)"
+  },
+  themeLight: {
+    MORNING_A: "vec3(0.30, 0.68, 0.62)",
+    MORNING_B: "vec3(0.62, 0.38, 0.72)",
+    EVENING_A: "vec3(0.14, 0.58, 0.48)",
+    EVENING_B: "vec3(0.34, 0.26, 0.70)",
+    NIGHT_A: "vec3(0.06, 0.34, 0.30)",
+    NIGHT_B: "vec3(0.12, 0.10, 0.36)"
   }
 };
 
@@ -392,6 +432,99 @@ export const variants = [
       FBM_OCTAVES: "3",
       CURTAIN_STRENGTH: "0.52",
       HAZE_STRENGTH: "0.045"
+    }
+  }),
+  variant({
+    id: "theme-oled",
+    label: "Theme OLED",
+    category: "theme",
+    file: "aurora-theme-oled.glsl",
+    description: "Lowest glow and strongest text protection for near-black OLED themes.",
+    performanceTier: "low",
+    palette: palettes.themeOled,
+    values: {
+      AURORA_INTENSITY: "0.34",
+      RIBBON_SPEED: "0.020",
+      RIBBON_SCALE: "0.92",
+      TEXT_PROTECT: "0.96",
+      RIBBON_LAYERS: "3",
+      FBM_OCTAVES: "3",
+      CURTAIN_STRENGTH: "0.50",
+      HAZE_STRENGTH: "0.025"
+    }
+  }),
+  variant({
+    id: "theme-dark",
+    label: "Theme Dark",
+    category: "theme",
+    file: "aurora-theme-dark.glsl",
+    description: "Balanced contrast for typical dark terminal themes.",
+    performanceTier: "medium",
+    palette: palettes.themeDark,
+    values: {
+      AURORA_INTENSITY: "0.56",
+      RIBBON_SPEED: "0.032",
+      RIBBON_SCALE: "1.00",
+      TEXT_PROTECT: "0.90",
+      RIBBON_LAYERS: "5",
+      CURTAIN_STRENGTH: "0.76",
+      HAZE_STRENGTH: "0.092"
+    }
+  }),
+  variant({
+    id: "theme-warm",
+    label: "Theme Warm",
+    category: "theme",
+    file: "aurora-theme-warm.glsl",
+    description: "Muted gold, green, and rose for warm dark palettes.",
+    performanceTier: "medium",
+    palette: palettes.themeWarm,
+    values: {
+      AURORA_INTENSITY: "0.50",
+      RIBBON_SPEED: "0.028",
+      RIBBON_SCALE: "0.96",
+      TEXT_PROTECT: "0.92",
+      RIBBON_LAYERS: "4",
+      CURTAIN_STRENGTH: "0.66",
+      HAZE_STRENGTH: "0.070"
+    }
+  }),
+  variant({
+    id: "theme-transparent",
+    label: "Theme Transparent",
+    category: "theme",
+    file: "aurora-theme-transparent.glsl",
+    description: "Lower haze for transparent windows where the desktop already adds texture.",
+    performanceTier: "low",
+    palette: palettes.themeTransparent,
+    values: {
+      AURORA_INTENSITY: "0.42",
+      RIBBON_SPEED: "0.024",
+      RIBBON_SCALE: "0.94",
+      TEXT_PROTECT: "0.94",
+      RIBBON_LAYERS: "3",
+      FBM_OCTAVES: "3",
+      CURTAIN_STRENGTH: "0.54",
+      HAZE_STRENGTH: "0.018"
+    }
+  }),
+  variant({
+    id: "theme-light",
+    label: "Theme Light",
+    category: "theme",
+    file: "aurora-theme-light.glsl",
+    description: "Very restrained overlay for light or light-ish terminal backgrounds.",
+    performanceTier: "low",
+    palette: palettes.themeLight,
+    values: {
+      AURORA_INTENSITY: "0.24",
+      RIBBON_SPEED: "0.018",
+      RIBBON_SCALE: "0.88",
+      TEXT_PROTECT: "0.98",
+      RIBBON_LAYERS: "2",
+      FBM_OCTAVES: "3",
+      CURTAIN_STRENGTH: "0.38",
+      HAZE_STRENGTH: "0.010"
     }
   })
 ];
