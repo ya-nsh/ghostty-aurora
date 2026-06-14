@@ -32,6 +32,27 @@ Seasonal:
 - `aurora-autumn.glsl`: muted gold, moss, and rose ribbons for a warmer terminal.
 - `aurora-deep-winter.glsl`: dark, slow, and extra conservative for long night use.
 
+Theme matched:
+
+- `aurora-theme-oled.glsl`: lowest glow and strongest text protection for near-black OLED themes.
+- `aurora-theme-dark.glsl`: balanced contrast for typical dark terminal themes.
+- `aurora-theme-warm.glsl`: muted gold, green, and rose for warm dark palettes.
+- `aurora-theme-transparent.glsl`: lower haze for transparent windows where the desktop already adds texture.
+- `aurora-theme-light.glsl`: very restrained overlay for light or light-ish terminal backgrounds.
+
+## Which Variant Should I Use?
+
+| Use case | Try first |
+| --- | --- |
+| You want the default look | `aurora` |
+| You want the calmest daily driver | `minimal` |
+| You want fewer GPU cycles | `lite`, `midnight`, or `theme-oled` |
+| You use a typical dark theme | `theme-dark` |
+| You use a warm theme | `theme-warm` or `autumn` |
+| You use transparency | `theme-transparent` |
+| You use a light-ish theme | `theme-light` |
+| You want a stronger visual preset | `nebula`, `arctic`, or `solar` |
+
 Polaris is a separate shader file, not an in-terminal runtime toggle. Ghostty selects shaders through config, so switching variants means changing the configured shader path and reloading config.
 
 ## Install
