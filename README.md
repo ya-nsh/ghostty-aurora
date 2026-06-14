@@ -1,10 +1,19 @@
 # Ghostty Aurora
 
-A subtle northern-lights shader for [Ghostty](https://ghostty.org/) terminal backgrounds.
+A subtle northern-lights shader set for [Ghostty](https://ghostty.org/) terminal backgrounds.
 
-Ghostty Aurora paints soft procedural ribbons behind your terminal text: pale morning waves, purple-blue evening aurora, or darker low-motion night glow. It is a single GLSL file, has no daemon, and only samples Ghostty's built-in `iChannel0` terminal texture.
+Ghostty Aurora paints soft procedural ribbons behind your terminal text. It now ships multiple variants, cursor-reactive motion, and a Polaris mode with a restrained starfield. The shaders are standalone GLSL files and only sample Ghostty's built-in `iChannel0` terminal texture.
 
 ![Preview](preview/preview.svg)
+
+## Variants
+
+- `aurora-lite.glsl`: calmer, cheaper, and extra conservative around text.
+- `aurora.glsl`: balanced default and the recommended daily driver.
+- `aurora-rich.glsl`: deeper curtains, stronger cursor pulse, and faint stars.
+- `polaris.glsl`: balanced aurora with a darker north-star sky.
+
+Polaris is a separate shader file, not an in-terminal runtime toggle. Ghostty selects shaders through config, so switching variants means changing the configured shader path and reloading config.
 
 ## Install
 
@@ -14,14 +23,20 @@ Clone the repo:
 git clone https://github.com/ya-nsh/ghostty-aurora.git
 ```
 
-Add the shader to your Ghostty config:
+Use the default balanced shader directly:
 
 ```conf
 custom-shader = /path/to/ghostty-aurora/aurora.glsl
 custom-shader-animation = true
 ```
 
-Reload Ghostty config or open a new window.
+Or use the switchable config fragment:
+
+```conf
+config-file = /path/to/ghostty-aurora/config/ghostty-aurora.conf
+```
+
+Then reload Ghostty config or open a new window.
 
 On macOS, Ghostty's config is usually at:
 
@@ -35,38 +50,47 @@ On Linux, it is usually at:
 ~/.config/ghostty/config
 ```
 
+## Switching
+
+This repo includes a tiny switcher that rewrites only `config/ghostty-aurora.conf`.
+
+```sh
+bin/ghostty-aurora list
+bin/ghostty-aurora current
+bin/ghostty-aurora use lite
+bin/ghostty-aurora use aurora
+bin/ghostty-aurora use rich
+bin/ghostty-aurora use polaris
+```
+
+After switching, reload Ghostty config. In the local setup this repo was built for, that is:
+
+```text
+cmd+s then r
+```
+
 ## Tuning
 
-Open `aurora.glsl` and edit the constants near the top.
+Generated shader files can be edited directly for quick experiments, but durable changes should go in `src/aurora.template.glsl` and `scripts/build-variants.mjs`.
+
+Regenerate all variants:
+
+```sh
+node scripts/build-variants.mjs
+```
+
+Useful constants near the top of each generated shader:
 
 ```glsl
 const float AURORA_INTENSITY = 0.62;
 const float RIBBON_SPEED = 0.035;
-const float RIBBON_SCALE = 1.0;
+const float RIBBON_SCALE = 1.00;
+const float CURSOR_REACTIVITY = 0.72;
 const float MORNING_MIX = 0.0;
 const float EVENING_MIX = 1.0;
 const float NIGHT_MIX = 0.0;
 const float TEXT_PROTECT = 0.88;
 #define TIME_MODE 0
-```
-
-Presets:
-
-```glsl
-// Morning
-const float MORNING_MIX = 1.0;
-const float EVENING_MIX = 0.0;
-const float NIGHT_MIX = 0.0;
-
-// Evening
-const float MORNING_MIX = 0.0;
-const float EVENING_MIX = 1.0;
-const float NIGHT_MIX = 0.0;
-
-// Night
-const float MORNING_MIX = 0.0;
-const float EVENING_MIX = 0.0;
-const float NIGHT_MIX = 1.0;
 ```
 
 `TIME_MODE`:
@@ -79,7 +103,7 @@ Ghostty currently documents `iDate` as not supported, so the committed default i
 
 ## Preview
 
-The preview loads the production `aurora.glsl` file and compiles it in WebGL.
+The preview loads the generated shader files and compiles them in WebGL.
 
 ```sh
 python3 -m http.server 8765
@@ -91,13 +115,15 @@ Then open:
 http://127.0.0.1:8765/preview/
 ```
 
-Use the buttons to preview morning, evening, night, or the `iTime` cycle. These buttons patch constants in memory only; they do not rewrite `aurora.glsl`.
+Use the variant buttons to switch between Lite, Aurora, Rich, and Polaris. Use the daypart buttons to preview morning, evening, night, or the `iTime` cycle. The Pulse button simulates Ghostty's `iTimeCursorChange` and `iCurrentCursor` uniforms.
 
 ## Troubleshooting
 
-- If the terminal goes black, remove or comment out `custom-shader`, reload Ghostty, and check the shader path.
+- If the terminal goes black, remove or comment out the Aurora config line, reload Ghostty, and check the shader path.
+- If the variant did not change, run `bin/ghostty-aurora current`, then reload Ghostty config.
+- If effects look stacked or too bright, check that your Ghostty config does not contain multiple Aurora `custom-shader` entries.
 - If the aurora does not animate, make sure `custom-shader-animation = true` is set.
-- If the aurora is too strong, lower `AURORA_INTENSITY`.
+- If the aurora is too strong, use `aurora-lite.glsl` or lower `AURORA_INTENSITY`.
 - If text readability suffers, raise `TEXT_PROTECT`.
 - If you use a light terminal theme, Aurora intentionally stays very subtle to protect contrast.
 

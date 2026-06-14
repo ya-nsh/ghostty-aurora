@@ -1,22 +1,22 @@
-// aurora.glsl - generated from src/aurora.template.glsl.
-// Variant: Aurora
+// polaris.glsl - generated from src/aurora.template.glsl.
+// Variant: Polaris
 //
 // Ghostty setup:
-//   custom-shader = /path/to/ghostty-aurora/aurora.glsl
+//   custom-shader = /path/to/ghostty-aurora/polaris.glsl
 //   custom-shader-animation = true
 //
 // The shader is self-contained and samples iChannel0, the terminal surface,
 // so terminal text stays readable while the aurora sits mostly in the dark.
 
 // Overall brightness of the aurora overlay.
-const float AURORA_INTENSITY = 0.62;
+const float AURORA_INTENSITY = 0.54;
 
 // Motion and scale of the ribbon field.
-const float RIBBON_SPEED = 0.035;
-const float RIBBON_SCALE = 1.00;
+const float RIBBON_SPEED = 0.026;
+const float RIBBON_SCALE = 0.98;
 
 // Cursor-reactive pulse intensity after typing or cursor movement.
-const float CURSOR_REACTIVITY = 0.72;
+const float CURSOR_REACTIVITY = 0.54;
 
 // Manual daypart mix used while Ghostty's iDate uniform is unavailable.
 // Suggested presets:
@@ -33,17 +33,17 @@ const float NIGHT_MIX = 0.0;
 #define TIME_MODE 0
 
 // Higher values protect bright text and glyph edges more aggressively.
-const float TEXT_PROTECT = 0.88;
+const float TEXT_PROTECT = 0.90;
 
-const int RIBBON_LAYERS = 5;
+const int RIBBON_LAYERS = 4;
 const int FBM_OCTAVES = 4;
-const float CURTAIN_STRENGTH = 0.78;
-const float HAZE_STRENGTH = 0.110;
-const float STAR_INTENSITY = 0.0;
-const float NORTH_STAR_INTENSITY = 0.0;
+const float CURTAIN_STRENGTH = 0.70;
+const float HAZE_STRENGTH = 0.085;
+const float STAR_INTENSITY = 0.20;
+const float NORTH_STAR_INTENSITY = 0.58;
 
-#define STARS_ENABLED 0
-#define POLARIS_MODE 0
+#define STARS_ENABLED 1
+#define POLARIS_MODE 1
 
 float sat(float x) {
     return clamp(x, 0.0, 1.0);
