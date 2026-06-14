@@ -154,10 +154,16 @@ async function activeIntensity() {
       if (match) {
         return match[1];
       }
+
+      throw new Error(`Could not read AURORA_INTENSITY from ${activeShaderPath}.`);
     } catch (error) {
-      if (error.code !== "ENOENT") {
-        throw error;
+      if (error.code === "ENOENT") {
+        throw new Error(
+          `Active intensity override points to missing ${activeShaderPath}. Run \`bin/ghostty-aurora intensity reset\` or set a new intensity.`
+        );
       }
+
+      throw error;
     }
   }
 
