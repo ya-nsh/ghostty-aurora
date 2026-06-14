@@ -21,6 +21,7 @@ Core:
 - `aurora.glsl`: balanced default and the recommended daily driver.
 - `aurora-rich.glsl`: deeper curtains and faint static stars.
 - `polaris.glsl`: cold no-star aurora with a darker polar palette.
+- `aurora-timelapse.glsl`: cycles through morning, evening, and night moods using `iTime`.
 
 Presets:
 
@@ -108,9 +109,11 @@ bin/ghostty-aurora use minimal
 bin/ghostty-aurora use aurora
 bin/ghostty-aurora use rich
 bin/ghostty-aurora use polaris
+bin/ghostty-aurora use timelapse
 bin/ghostty-aurora use arctic
 bin/ghostty-aurora use winter
 bin/ghostty-aurora use theme-dark --intensity 0.45
+bin/ghostty-aurora use timelapse --minutes 5
 ```
 
 After switching, reload Ghostty config. In the local setup this repo was built for, that is:
@@ -130,6 +133,32 @@ bin/ghostty-aurora intensity reset
 ```
 
 `intensity set` writes `config/active.glsl`, patches only `AURORA_INTENSITY`, and points `config/ghostty-aurora.conf` at that local shader. `config/active.glsl` is ignored by git. Running `bin/ghostty-aurora use <variant>` without `--intensity` returns to the committed shader file for that variant.
+
+## Time-Lapse Cycle
+
+The `timelapse` variant cycles through morning, evening, and night palettes using `iTime`. It does not depend on wall-clock time, so it works while Ghostty's `iDate` uniform remains unavailable for real daypart switching.
+
+The committed shader uses a 30-minute cycle. Local overrides must use 5-minute steps from 5 to 240 minutes:
+
+```sh
+bin/ghostty-aurora timelapse get
+bin/ghostty-aurora timelapse set 5
+bin/ghostty-aurora timelapse set 30
+bin/ghostty-aurora timelapse reset
+bin/ghostty-aurora use timelapse --minutes 5
+```
+
+`timelapse set` writes `config/active.glsl`, patches only `TIME_LAPSE_MINUTES`, and points `config/ghostty-aurora.conf` at that local shader. Reload Ghostty config after changing the interval.
+
+To test this branch in Ghostty:
+
+```sh
+git checkout feature/timelapse-cycle
+node scripts/build-variants.mjs
+bin/ghostty-aurora timelapse set 5
+```
+
+Reload Ghostty config and leave the terminal open to watch the full mood cycle.
 
 ## Tuning
 
@@ -159,6 +188,7 @@ const float TEXT_PROTECT = 0.88;
 - `0`: manual mix using `MORNING_MIX`, `EVENING_MIX`, and `NIGHT_MIX`.
 - `1`: preview cycle using `iTime`; useful for demo recordings.
 - `2`: future wall-clock mode using `iDate.w`.
+- `3`: configurable time-lapse cycle using `TIME_LAPSE_MINUTES`.
 
 Ghostty currently documents `iDate` as not supported, so the committed default is manual mode. The shader keeps the `iDate` path in place so wall-clock dayparts can be enabled when Ghostty populates that uniform.
 

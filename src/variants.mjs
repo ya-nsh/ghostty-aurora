@@ -150,6 +150,11 @@ const defaults = {
   HAZE_STRENGTH: "0.110",
   STAR_INTENSITY: "0.0",
   NORTH_STAR_INTENSITY: "0.0",
+  TIME_MODE: "0",
+  TIME_LAPSE_ENABLED: "0.0",
+  TIME_LAPSE_MINUTES: "30.0",
+  TIME_LAPSE_PHASE_OFFSET: "0.0",
+  TIME_LAPSE_SMOOTHING: "0.70",
   STARS_ENABLED: "0",
   POLARIS_MODE: "0",
   ...defaultPalette
@@ -248,6 +253,27 @@ export const variants = [
       CURTAIN_STRENGTH: "0.70",
       HAZE_STRENGTH: "0.085",
       POLARIS_MODE: "1"
+    }
+  }),
+  variant({
+    id: "timelapse",
+    label: "Time-Lapse",
+    category: "core",
+    file: "aurora-timelapse.glsl",
+    description: "Cycles through morning, evening, and night moods using iTime.",
+    performanceTier: "medium",
+    values: {
+      AURORA_INTENSITY: "0.58",
+      RIBBON_SPEED: "0.030",
+      RIBBON_SCALE: "1.00",
+      TEXT_PROTECT: "0.90",
+      RIBBON_LAYERS: "5",
+      CURTAIN_STRENGTH: "0.76",
+      HAZE_STRENGTH: "0.092",
+      TIME_MODE: "3",
+      TIME_LAPSE_ENABLED: "1.0",
+      TIME_LAPSE_MINUTES: "30.0",
+      TIME_LAPSE_SMOOTHING: "0.75"
     }
   }),
   variant({

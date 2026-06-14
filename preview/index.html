@@ -234,29 +234,25 @@
         morning: [
           ["const float MORNING_MIX = 0.0;", "const float MORNING_MIX = 1.0;"],
           ["const float EVENING_MIX = 1.0;", "const float EVENING_MIX = 0.0;"],
-          ["const float NIGHT_MIX = 0.0;", "const float NIGHT_MIX = 0.0;"],
-          ["#define TIME_MODE 0", "#define TIME_MODE 0"]
+          ["const float NIGHT_MIX = 0.0;", "const float NIGHT_MIX = 0.0;"]
         ],
         evening: [
           ["const float MORNING_MIX = 0.0;", "const float MORNING_MIX = 0.0;"],
           ["const float EVENING_MIX = 1.0;", "const float EVENING_MIX = 1.0;"],
-          ["const float NIGHT_MIX = 0.0;", "const float NIGHT_MIX = 0.0;"],
-          ["#define TIME_MODE 0", "#define TIME_MODE 0"]
+          ["const float NIGHT_MIX = 0.0;", "const float NIGHT_MIX = 0.0;"]
         ],
         night: [
           ["const float MORNING_MIX = 0.0;", "const float MORNING_MIX = 0.0;"],
           ["const float EVENING_MIX = 1.0;", "const float EVENING_MIX = 0.0;"],
-          ["const float NIGHT_MIX = 0.0;", "const float NIGHT_MIX = 1.0;"],
-          ["#define TIME_MODE 0", "#define TIME_MODE 0"]
-        ],
-        cycle: [
-          ["#define TIME_MODE 0", "#define TIME_MODE 1"]
+          ["const float NIGHT_MIX = 0.0;", "const float NIGHT_MIX = 1.0;"]
         ]
       };
 
-      for (const [from, to] of replacements[daypart]) {
+      for (const [from, to] of replacements[daypart] || []) {
         patched = patched.replace(from, to);
       }
+
+      patched = patched.replace(/#define TIME_MODE [0-9]+/, daypart === "cycle" ? "#define TIME_MODE 1" : "#define TIME_MODE 0");
 
       return patched;
     }

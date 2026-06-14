@@ -1,19 +1,19 @@
-// aurora-lite.glsl - generated from src/aurora.template.glsl.
-// Variant: Lite
+// aurora-timelapse.glsl - generated from src/aurora.template.glsl.
+// Variant: Time-Lapse
 //
 // Ghostty setup:
-//   custom-shader = /path/to/ghostty-aurora/aurora-lite.glsl
+//   custom-shader = /path/to/ghostty-aurora/aurora-timelapse.glsl
 //   custom-shader-animation = true
 //
 // The shader is self-contained and samples iChannel0, the terminal surface,
 // so terminal text stays readable while the aurora sits mostly in the dark.
 
 // Overall brightness of the aurora overlay.
-const float AURORA_INTENSITY = 0.46;
+const float AURORA_INTENSITY = 0.58;
 
 // Motion and scale of the ribbon field.
-const float RIBBON_SPEED = 0.028;
-const float RIBBON_SCALE = 0.92;
+const float RIBBON_SPEED = 0.030;
+const float RIBBON_SCALE = 1.00;
 
 // Manual daypart mix used while Ghostty's iDate uniform is unavailable.
 // Suggested presets:
@@ -28,21 +28,21 @@ const float NIGHT_MIX = 0.0;
 // 3 = configurable time-lapse cycle from iTime.
 // Ghostty currently declares iDate but does not populate it, so keep 0 for
 // normal use until Ghostty wires wall-clock values into custom shaders.
-#define TIME_MODE 0
+#define TIME_MODE 3
 
 // Higher values protect bright text and glyph edges more aggressively.
-const float TEXT_PROTECT = 0.92;
+const float TEXT_PROTECT = 0.90;
 
-const int RIBBON_LAYERS = 3;
-const int FBM_OCTAVES = 3;
-const float CURTAIN_STRENGTH = 0.58;
-const float HAZE_STRENGTH = 0.070;
+const int RIBBON_LAYERS = 5;
+const int FBM_OCTAVES = 4;
+const float CURTAIN_STRENGTH = 0.76;
+const float HAZE_STRENGTH = 0.092;
 const float STAR_INTENSITY = 0.0;
 const float NORTH_STAR_INTENSITY = 0.0;
-const float TIME_LAPSE_ENABLED = 0.0;
+const float TIME_LAPSE_ENABLED = 1.0;
 const float TIME_LAPSE_MINUTES = 30.0;
 const float TIME_LAPSE_PHASE_OFFSET = 0.0;
-const float TIME_LAPSE_SMOOTHING = 0.70;
+const float TIME_LAPSE_SMOOTHING = 0.75;
 
 const vec3 MORNING_A = vec3(0.63, 0.96, 0.90);
 const vec3 MORNING_B = vec3(1.00, 0.67, 0.45);

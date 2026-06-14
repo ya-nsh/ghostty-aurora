@@ -24,10 +24,11 @@ const float MORNING_MIX = 0.0;
 const float EVENING_MIX = 1.0;
 const float NIGHT_MIX = 0.0;
 
-// 0 = manual mix above, 1 = preview cycle from iTime, 2 = future iDate auto.
+// 0 = manual mix above, 1 = preview cycle from iTime, 2 = future iDate auto,
+// 3 = configurable time-lapse cycle from iTime.
 // Ghostty currently declares iDate but does not populate it, so keep 0 for
 // normal use until Ghostty wires wall-clock values into custom shaders.
-#define TIME_MODE 0
+#define TIME_MODE @TIME_MODE@
 
 // Higher values protect bright text and glyph edges more aggressively.
 const float TEXT_PROTECT = @TEXT_PROTECT@;
@@ -38,6 +39,10 @@ const float CURTAIN_STRENGTH = @CURTAIN_STRENGTH@;
 const float HAZE_STRENGTH = @HAZE_STRENGTH@;
 const float STAR_INTENSITY = @STAR_INTENSITY@;
 const float NORTH_STAR_INTENSITY = @NORTH_STAR_INTENSITY@;
+const float TIME_LAPSE_ENABLED = @TIME_LAPSE_ENABLED@;
+const float TIME_LAPSE_MINUTES = @TIME_LAPSE_MINUTES@;
+const float TIME_LAPSE_PHASE_OFFSET = @TIME_LAPSE_PHASE_OFFSET@;
+const float TIME_LAPSE_SMOOTHING = @TIME_LAPSE_SMOOTHING@;
 
 const vec3 MORNING_A = @MORNING_A@;
 const vec3 MORNING_B = @MORNING_B@;
@@ -100,13 +105,26 @@ vec3 moodManual() {
     return mood / total;
 }
 
-vec3 moodPreview(float t) {
-    float h = fract(t / 96.0);
-    float morning = smoothstep(0.00, 0.16, h) * (1.0 - smoothstep(0.30, 0.42, h));
-    float evening = smoothstep(0.25, 0.45, h) * (1.0 - smoothstep(0.66, 0.78, h));
+vec3 moodCycle(float h, float smoothing) {
+    float edge = mix(0.04, 0.18, sat(smoothing));
+    float morning = smoothstep(0.00, edge, h) * (1.0 - smoothstep(0.30, 0.30 + edge, h));
+    float evening = smoothstep(0.30, 0.30 + edge, h) * (1.0 - smoothstep(0.66, 0.66 + edge, h));
     float night = 1.0 - max(morning, evening);
     vec3 mood = vec3(morning, evening, night);
     return mood / max(dot(mood, vec3(1.0)), 0.001);
+}
+
+vec3 moodPreview(float t) {
+    return moodCycle(fract(t / 96.0), 0.55);
+}
+
+vec3 moodTimeLapse(float t) {
+    float cycleSeconds = max(TIME_LAPSE_MINUTES * 60.0, 1.0);
+    float h = fract(t / cycleSeconds + TIME_LAPSE_PHASE_OFFSET);
+    vec3 mood = moodCycle(h, TIME_LAPSE_SMOOTHING);
+    vec3 manual = moodManual();
+
+    return mix(manual, mood, sat(TIME_LAPSE_ENABLED));
 }
 
 vec3 moodFromDate() {
@@ -128,6 +146,8 @@ vec3 currentMood(float t) {
     mood = moodPreview(t);
     #elif TIME_MODE == 2
     mood = moodFromDate();
+    #elif TIME_MODE == 3
+    mood = moodTimeLapse(t);
     #endif
 
     return mood;
