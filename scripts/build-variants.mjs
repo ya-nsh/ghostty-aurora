@@ -75,7 +75,7 @@ const variants = [
       CURTAIN_STRENGTH: "0.70",
       HAZE_STRENGTH: "0.085",
       STAR_INTENSITY: "0.20",
-      NORTH_STAR_INTENSITY: "0.58",
+      NORTH_STAR_INTENSITY: "0.18",
       STARS_ENABLED: "1",
       POLARIS_MODE: "1"
     }

@@ -37,7 +37,7 @@ const int FBM_OCTAVES = 4;
 const float CURTAIN_STRENGTH = 0.70;
 const float HAZE_STRENGTH = 0.085;
 const float STAR_INTENSITY = 0.20;
-const float NORTH_STAR_INTENSITY = 0.58;
+const float NORTH_STAR_INTENSITY = 0.18;
 
 #define STARS_ENABLED 1
 #define POLARIS_MODE 1
@@ -197,9 +197,9 @@ vec3 stars(vec2 uv, float t) {
     #if POLARIS_MODE == 1
     vec2 north = vec2(0.76, 0.18);
     vec2 d = vec2((uv.x - north.x) * 1.78, uv.y - north.y);
-    float core = exp(-dot(d, d) * 980.0);
-    float halo = exp(-dot(d, d) * 42.0);
-    color += vec3(0.72, 0.92, 1.0) * (core * 1.8 + halo * 0.35) * NORTH_STAR_INTENSITY;
+    float core = exp(-dot(d, d) * 2600.0);
+    float halo = exp(-dot(d, d) * 220.0);
+    color += vec3(0.58, 0.74, 0.86) * (core * 0.70 + halo * 0.030) * NORTH_STAR_INTENSITY;
     #endif
 
     return color;
