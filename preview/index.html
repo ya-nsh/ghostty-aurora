@@ -13,7 +13,6 @@
       --muted: #8d98b8;
       --line: #27304a;
       --accent: #77f0c3;
-      --blue: #8da2ff;
     }
 
     * {
@@ -88,11 +87,6 @@
       color: #dfffee;
     }
 
-    button[data-action="pulse"] {
-      border-color: color-mix(in srgb, var(--blue), transparent 28%);
-      color: #dbe3ff;
-    }
-
     .stage {
       position: relative;
       overflow: hidden;
@@ -151,7 +145,7 @@
     <header>
       <div>
         <h1>Ghostty Aurora</h1>
-        <p>Generated shaders compiled in WebGL with a simulated Ghostty cursor pulse.</p>
+        <p>Generated shaders compiled in WebGL with ambient-only motion.</p>
       </div>
       <div class="toolbar">
         <div class="controls" role="group" aria-label="Variant">
@@ -166,7 +160,6 @@
           <button type="button" data-daypart="night" aria-pressed="false">Night</button>
           <button type="button" data-daypart="cycle" aria-pressed="false">Cycle</button>
         </div>
-        <button type="button" data-action="pulse">Pulse</button>
       </div>
     </header>
 
@@ -182,7 +175,6 @@
     const statusEl = document.querySelector("#status");
     const variantButtons = [...document.querySelectorAll("button[data-variant]")];
     const daypartButtons = [...document.querySelectorAll("button[data-daypart]")];
-    const pulseButton = document.querySelector("button[data-action='pulse']");
 
     const variants = {
       lite: { file: "aurora-lite.glsl", label: "Lite" },
@@ -278,8 +270,6 @@
         uniform vec3 iResolution;
         uniform float iTime;
         uniform vec4 iDate;
-        uniform vec4 iCurrentCursor;
-        uniform float iTimeCursorChange;
         out vec4 outColor;
         ${sourceForDaypart(source, daypart)}
         void main() {
@@ -313,8 +303,8 @@
         ["polaris -> aurora with a north-star sky", "#dbe3ff"],
         ["", "#d8deef"],
         ["~/code/ghostty-aurora main $ node scripts/build-variants.mjs", "#8d98b8"],
-        ["iTimeCursorChange adds a soft pulse after movement", "#d8deef"],
-        ["iCurrentCursor anchors a local ripple near the caret", "#d8deef"]
+        ["ambient motion only; no input-reactive effects", "#d8deef"],
+        ["Polaris keeps a calm, static starfield", "#d8deef"]
       ];
 
       lines.forEach(([text, color], index) => {
@@ -351,7 +341,6 @@
       let activeSource = "";
       let program;
       let locations;
-      let lastCursorChange = 0.0;
 
       async function fetchVariant(name) {
         const response = await fetch(`../${variants[name].file}`);
@@ -384,9 +373,7 @@
           resolution: gl.getUniformLocation(program, "iResolution"),
           time: gl.getUniformLocation(program, "iTime"),
           date: gl.getUniformLocation(program, "iDate"),
-          channel0: gl.getUniformLocation(program, "iChannel0"),
-          cursor: gl.getUniformLocation(program, "iCurrentCursor"),
-          cursorChange: gl.getUniformLocation(program, "iTimeCursorChange")
+          channel0: gl.getUniformLocation(program, "iChannel0")
         };
 
         variantButtons.forEach((button) => {
@@ -416,20 +403,10 @@
         });
       });
 
-      pulseButton.addEventListener("click", () => {
-        lastCursorChange = performance.now() * 0.001;
-      });
-
       await useSelection(activeVariant, activeDaypart);
 
       function frame(ms) {
         const t = ms * 0.001;
-        const beat = Math.floor(t / 3.6);
-        const cyclePulse = beat * 3.6 + 0.22;
-        lastCursorChange = Math.max(lastCursorChange, cyclePulse);
-
-        const cursorX = 106 + 790 * (0.5 + 0.5 * Math.sin(t * 0.22));
-        const cursorY = 438 + 42 * Math.sin(t * 0.31);
 
         gl.viewport(0, 0, canvas.width, canvas.height);
         gl.useProgram(program);
@@ -439,8 +416,6 @@
         gl.uniform3f(locations.resolution, canvas.width, canvas.height, 1);
         gl.uniform1f(locations.time, t);
         gl.uniform4f(locations.date, 2026, 6, 14, 20 * 3600);
-        gl.uniform4f(locations.cursor, -cursorX, cursorY, 14, 30);
-        gl.uniform1f(locations.cursorChange, lastCursorChange);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         requestAnimationFrame(frame);
       }

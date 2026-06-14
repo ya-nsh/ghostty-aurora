@@ -2,7 +2,7 @@
 
 A subtle northern-lights shader set for [Ghostty](https://ghostty.org/) terminal backgrounds.
 
-Ghostty Aurora paints soft procedural ribbons behind your terminal text. It now ships multiple variants, cursor-reactive motion, and a Polaris mode with a restrained starfield. The shaders are standalone GLSL files and only sample Ghostty's built-in `iChannel0` terminal texture.
+Ghostty Aurora paints soft procedural ribbons behind your terminal text. It ships multiple variants and a Polaris mode with a restrained, static starfield. The shaders are standalone GLSL files and only sample Ghostty's built-in `iChannel0` terminal texture.
 
 ![Preview](preview/preview.svg)
 
@@ -10,7 +10,7 @@ Ghostty Aurora paints soft procedural ribbons behind your terminal text. It now 
 
 - `aurora-lite.glsl`: calmer, cheaper, and extra conservative around text.
 - `aurora.glsl`: balanced default and the recommended daily driver.
-- `aurora-rich.glsl`: deeper curtains, stronger cursor pulse, and faint stars.
+- `aurora-rich.glsl`: deeper curtains and faint static stars.
 - `polaris.glsl`: balanced aurora with a darker north-star sky.
 
 Polaris is a separate shader file, not an in-terminal runtime toggle. Ghostty selects shaders through config, so switching variants means changing the configured shader path and reloading config.
@@ -85,7 +85,6 @@ Useful constants near the top of each generated shader:
 const float AURORA_INTENSITY = 0.62;
 const float RIBBON_SPEED = 0.035;
 const float RIBBON_SCALE = 1.00;
-const float CURSOR_REACTIVITY = 0.72;
 const float MORNING_MIX = 0.0;
 const float EVENING_MIX = 1.0;
 const float NIGHT_MIX = 0.0;
@@ -115,7 +114,7 @@ Then open:
 http://127.0.0.1:8765/preview/
 ```
 
-Use the variant buttons to switch between Lite, Aurora, Rich, and Polaris. Use the daypart buttons to preview morning, evening, night, or the `iTime` cycle. The Pulse button simulates Ghostty's `iTimeCursorChange` and `iCurrentCursor` uniforms.
+Use the variant buttons to switch between Lite, Aurora, Rich, and Polaris. Use the daypart buttons to preview morning, evening, night, or the `iTime` cycle.
 
 ## Troubleshooting
 

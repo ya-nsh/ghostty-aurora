@@ -15,9 +15,6 @@ const float AURORA_INTENSITY = 0.62;
 const float RIBBON_SPEED = 0.035;
 const float RIBBON_SCALE = 1.00;
 
-// Cursor-reactive pulse intensity after typing or cursor movement.
-const float CURSOR_REACTIVITY = 0.72;
-
 // Manual daypart mix used while Ghostty's iDate uniform is unavailable.
 // Suggested presets:
 //   Morning: MORNING_MIX 1.0, EVENING_MIX 0.0, NIGHT_MIX 0.0
@@ -143,38 +140,16 @@ vec3 currentMood(float t) {
     return mood;
 }
 
-float cursorPulse() {
-    float age = max(iTime - iTimeCursorChange, 0.0);
-    return exp(-age * 2.65) * step(0.001, iTimeCursorChange);
-}
-
-float cursorRipple(vec2 uv, float pulse) {
-    vec2 cursorSize = max(iCurrentCursor.zw, vec2(1.0));
-    vec2 cursorPx = vec2(-iCurrentCursor.x + cursorSize.x * 0.5,
-                         iCurrentCursor.y + cursorSize.y * 0.5);
-    vec2 cursorUv = cursorPx / iResolution.xy;
-    cursorUv.x = clamp(cursorUv.x, 0.0, 1.0);
-    cursorUv.y = clamp(cursorUv.y, 0.0, 1.0);
-
-    float aspect = iResolution.x / max(iResolution.y, 1.0);
-    vec2 delta = vec2((uv.x - cursorUv.x) * aspect, uv.y - cursorUv.y);
-    float dist = length(delta);
-    float wave = 0.5 + 0.5 * sin(dist * 38.0 - iTime * 5.2);
-    float local = exp(-dist * 8.2);
-
-    return pulse * local * mix(0.65, 1.0, wave);
-}
-
-float ribbon(vec2 uv, float t, float layer, float nightCalm, float pulse) {
-    float speed = RIBBON_SPEED * mix(1.35, 0.45, nightCalm) * (1.0 + pulse * CURSOR_REACTIVITY * 0.35);
+float ribbon(vec2 uv, float t, float layer, float nightCalm) {
+    float speed = RIBBON_SPEED * mix(1.35, 0.45, nightCalm);
     float drift = t * speed * (0.75 + layer * 0.18);
     vec2 p = vec2(uv.x * (2.0 + layer * 0.65) * RIBBON_SCALE + drift,
                   uv.y * (2.8 + layer * 0.38) - layer * 3.1);
 
     float large = fbm(p + vec2(0.0, drift * 0.55));
     float small = fbm(p * 2.2 - vec2(drift * 0.70, 0.0));
-    float center = 0.18 + layer * 0.095 + 0.18 * large + pulse * CURSOR_REACTIVITY * 0.012;
-    float width = 0.055 + 0.020 * small + pulse * CURSOR_REACTIVITY * 0.008;
+    float center = 0.18 + layer * 0.095 + 0.18 * large;
+    float width = 0.055 + 0.020 * small;
     float band = exp(-pow((uv.y - center) / width, 2.0));
 
     float curtainNoise = fbm(vec2(uv.x * (12.0 + layer * 4.0) - drift * 8.0,
@@ -185,13 +160,13 @@ float ribbon(vec2 uv, float t, float layer, float nightCalm, float pulse) {
     return band * curtains * verticalFalloff;
 }
 
-vec3 aurora(vec2 uv, float t, vec3 mood, float pulse) {
+vec3 aurora(vec2 uv, float t, vec3 mood) {
     float glow = 0.0;
     vec3 color = vec3(0.0);
 
     for (int i = 0; i < RIBBON_LAYERS; i++) {
         float fi = float(i);
-        float r = ribbon(uv, t, fi, mood.z, pulse);
+        float r = ribbon(uv, t, fi, mood.z);
         float phase = fract(fi * 0.27 + fbm(vec2(uv.x * 1.4 + t * 0.01, fi)));
         color += palette(phase, mood) * r * (1.0 - fi * 0.10);
         glow += r;
@@ -215,7 +190,7 @@ vec3 stars(vec2 uv, float t) {
     vec2 local = fract(field) - 0.5;
     float star = starCell(cell, 0.984);
     float shape = exp(-dot(local, local) * 90.0);
-    float twinkle = 0.72 + 0.28 * sin(t * 0.55 + hash21(cell + 14.3) * 6.2831);
+    float twinkle = 0.86 + 0.14 * hash21(cell + 14.3);
     float skyMask = smoothstep(0.96, 0.18, uv.y);
     vec3 color = vec3(0.65, 0.78, 1.0) * star * shape * twinkle * skyMask * STAR_INTENSITY;
 
@@ -255,12 +230,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 fieldUv = vec2((uv.x - 0.5) * aspect + 0.5, uv.y);
 
     vec3 mood = currentMood(iTime);
-    float pulse = cursorPulse();
-    float localRipple = cursorRipple(uv, pulse);
     float nightCalm = mood.z;
     float intensity = AURORA_INTENSITY * mix(1.0, 0.58, nightCalm);
-    vec3 lights = aurora(fieldUv, iTime, mood, pulse);
-    lights += palette(0.36 + pulse * 0.08, mood) * localRipple * CURSOR_REACTIVITY * 0.48;
+    vec3 lights = aurora(fieldUv, iTime, mood);
     lights += stars(uv, iTime);
 
     float mask = readabilityMask(uv, base);
