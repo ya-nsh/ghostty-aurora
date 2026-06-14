@@ -3,26 +3,22 @@
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { findVariant, variantIds, variants } from "../src/variants.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const configDir = path.join(root, "config");
 const configPath = path.join(configDir, "ghostty-aurora.conf");
 
-const variants = new Map([
-  ["lite", "aurora-lite.glsl"],
-  ["aurora", "aurora.glsl"],
-  ["rich", "aurora-rich.glsl"],
-  ["polaris", "polaris.glsl"]
-]);
-
 function usage() {
+  const idList = variantIds().join("|");
+
   return [
     "Usage: ghostty-aurora <command>",
     "",
     "Commands:",
     "  list                         List available variants",
     "  current                      Print the active variant",
-    "  use lite|aurora|rich|polaris  Switch the Ghostty shader fragment",
+    `  use ${idList}  Switch the Ghostty shader fragment`,
     "",
     "After switching, reload Ghostty config. In this setup: cmd+s then r."
   ].join("\n");
@@ -40,16 +36,16 @@ function configFor(name, file) {
 }
 
 async function writeConfig(name) {
-  const file = variants.get(name);
-  if (!file) {
+  const variant = findVariant(name);
+  if (!variant) {
     throw new Error(`Unknown variant: ${name}`);
   }
 
   await mkdir(configDir, { recursive: true });
   const tmpPath = `${configPath}.tmp`;
-  await writeFile(tmpPath, configFor(name, file));
+  await writeFile(tmpPath, configFor(name, variant.file));
   await rename(tmpPath, configPath);
-  return file;
+  return variant.file;
 }
 
 async function current() {
@@ -60,9 +56,9 @@ async function current() {
       return match[1];
     }
 
-    for (const [name, file] of variants) {
-      if (config.includes(file)) {
-        return name;
+    for (const variant of variants) {
+      if (config.includes(variant.file)) {
+        return variant.id;
       }
     }
   } catch (error) {
@@ -78,15 +74,15 @@ const [, , command, value] = process.argv;
 
 try {
   if (command === "list") {
-    for (const [name, file] of variants) {
-      console.log(`${name}\t${file}`);
+    for (const variant of variants) {
+      console.log(`${variant.id}\t${variant.file}`);
     }
   } else if (command === "current") {
     console.log(await current());
   } else if (command === "use") {
     const name = value || "";
-    if (!variants.has(name)) {
-      throw new Error(`Expected one of: ${[...variants.keys()].join(", ")}`);
+    if (!findVariant(name)) {
+      throw new Error(`Expected one of: ${variantIds().join(", ")}`);
     }
 
     const file = await writeConfig(name);
