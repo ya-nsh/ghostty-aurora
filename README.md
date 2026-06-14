@@ -2,17 +2,35 @@
 
 A subtle northern-lights shader set for [Ghostty](https://ghostty.org/) terminal backgrounds.
 
-Ghostty Aurora paints soft procedural ribbons behind your terminal text. It ships multiple variants and a Polaris mode with a restrained, static starfield. The shaders are standalone GLSL files and only sample Ghostty's built-in `iChannel0` terminal texture.
+Ghostty Aurora paints soft procedural ribbons behind your terminal text. It ships multiple variants, preset packs, and seasonal modes as standalone GLSL files that only sample Ghostty's built-in `iChannel0` terminal texture.
 
 ![Preview](preview/preview.svg)
 
 ## Variants
+
+Core:
 
 - `aurora-lite.glsl`: calmer, cheaper, and extra conservative around text.
 - `aurora-minimal.glsl`: aurora-only, low haze, and very calm for daily use.
 - `aurora.glsl`: balanced default and the recommended daily driver.
 - `aurora-rich.glsl`: deeper curtains and faint static stars.
 - `polaris.glsl`: cold no-star aurora with a darker polar palette.
+
+Presets:
+
+- `aurora-arctic.glsl`: bright teal and glacial blue ribbons with a crisp cold feel.
+- `aurora-nebula.glsl`: purple, magenta, and blue ribbons with a richer sci-fi mood.
+- `aurora-fjord.glsl`: green, teal, and deep-water blue with slower calm motion.
+- `aurora-midnight.glsl`: deep low-intensity blue-green for late-night sessions.
+- `aurora-solar.glsl`: warmer sunrise amber and teal ribbons without getting loud.
+
+Seasonal:
+
+- `aurora-winter.glsl`: icy blue-green ribbons with soft snow-night restraint.
+- `aurora-spring.glsl`: fresh green with light coral morning tones.
+- `aurora-summer-night.glsl`: warm dusk edges with relaxed blue-green night ribbons.
+- `aurora-autumn.glsl`: muted gold, moss, and rose ribbons for a warmer terminal.
+- `aurora-deep-winter.glsl`: dark, slow, and extra conservative for long night use.
 
 Polaris is a separate shader file, not an in-terminal runtime toggle. Ghostty selects shaders through config, so switching variants means changing the configured shader path and reloading config.
 
@@ -59,9 +77,12 @@ This repo includes a tiny switcher that rewrites only `config/ghostty-aurora.con
 bin/ghostty-aurora list
 bin/ghostty-aurora current
 bin/ghostty-aurora use lite
+bin/ghostty-aurora use minimal
 bin/ghostty-aurora use aurora
 bin/ghostty-aurora use rich
 bin/ghostty-aurora use polaris
+bin/ghostty-aurora use arctic
+bin/ghostty-aurora use winter
 ```
 
 After switching, reload Ghostty config. In the local setup this repo was built for, that is:
@@ -115,7 +136,7 @@ Then open:
 http://127.0.0.1:8765/preview/
 ```
 
-Use the variant buttons to switch between Lite, Aurora, Rich, and Polaris. Use the daypart buttons to preview morning, evening, night, or the `iTime` cycle.
+Use the variant buttons to switch between the core, preset, and seasonal shaders. Use the daypart buttons to preview morning, evening, night, or the `iTime` cycle.
 
 ## Troubleshooting
 
