@@ -1,0 +1,510 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ghostty Aurora Gallery</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080a12;
+      --panel: #111625;
+      --text: #e8eefc;
+      --muted: #8d98b8;
+      --line: #27304a;
+      --accent: #77f0c3;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #070a12;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(1440px, calc(100vw - 32px));
+      margin: 0 auto;
+      padding: 28px 0 36px;
+      display: grid;
+      gap: 18px;
+    }
+
+    header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    button {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #12182a;
+      color: var(--text);
+      padding: 8px 11px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    button[aria-pressed="true"] {
+      border-color: color-mix(in srgb, var(--accent), white 16%);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent), transparent 68%) inset;
+      color: #dfffee;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #0b101c;
+    }
+
+    .preview {
+      aspect-ratio: 16 / 9;
+      background: #03050a;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .meta {
+      padding: 10px 12px 12px;
+      display: grid;
+      gap: 5px;
+    }
+
+    .title-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    .tier {
+      border: 1px solid color-mix(in srgb, var(--line), white 8%);
+      border-radius: 999px;
+      padding: 2px 8px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+      white-space: nowrap;
+    }
+
+    .description {
+      min-height: 40px;
+      margin: 0;
+      font-size: 12px;
+    }
+
+    .file {
+      color: #9edec9;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+      overflow-wrap: anywhere;
+    }
+
+    .status {
+      min-height: 18px;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .status[data-state="ok"] {
+      color: var(--accent);
+    }
+
+    .status[data-state="error"] {
+      color: #ff8b9a;
+    }
+
+    @media (max-width: 760px) {
+      header {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .controls {
+        justify-content: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Ghostty Aurora Gallery</h1>
+        <p>All generated variants compiled with the same Ghostty-style uniforms.</p>
+      </div>
+      <div class="controls" role="group" aria-label="Daypart">
+        <button type="button" data-daypart="evening" aria-pressed="true">Evening</button>
+        <button type="button" data-daypart="morning">Morning</button>
+        <button type="button" data-daypart="night">Night</button>
+        <button type="button" data-daypart="cycle">Cycle</button>
+      </div>
+    </header>
+
+    <section class="grid" data-gallery></section>
+    <div class="status" data-status data-state="ok">Loading shaders...</div>
+  </main>
+
+  <script type="module">
+    import { variants } from "../src/variants.mjs";
+
+    const gallery = document.querySelector("[data-gallery]");
+    const status = document.querySelector("[data-status]");
+    const daypartButtons = [...document.querySelectorAll("button[data-daypart]")];
+    let activeDaypart = "evening";
+    let frameHandle = null;
+    let startTime = 0;
+    const cards = [];
+
+    gallery.innerHTML = variants.map((variant) => `
+      <article class="card" data-variant="${variant.id}">
+        <div class="preview">
+          <canvas width="520" height="293" aria-label="${variant.label} preview"></canvas>
+        </div>
+        <div class="meta">
+          <div class="title-row">
+            <h2>${variant.label}</h2>
+            <span class="tier">${variant.performanceTier}</span>
+          </div>
+          <p class="description">${variant.description}</p>
+          <div class="file">${variant.file}</div>
+        </div>
+      </article>
+    `).join("");
+
+    const vertexSource = `#version 300 es
+      in vec2 position;
+      void main() {
+        gl_Position = vec4(position, 0.0, 1.0);
+      }
+    `;
+
+    function setStatus(message, state = "ok") {
+      status.textContent = message;
+      status.dataset.state = state;
+    }
+
+    function compile(gl, type, source) {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        throw new Error(gl.getShaderInfoLog(shader) || "Shader compile failed.");
+      }
+
+      return shader;
+    }
+
+    function link(gl, vertex, fragment) {
+      const program = gl.createProgram();
+      gl.attachShader(program, vertex);
+      gl.attachShader(program, fragment);
+      gl.bindAttribLocation(program, 0, "position");
+      gl.linkProgram(program);
+
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        throw new Error(gl.getProgramInfoLog(program) || "Program link failed.");
+      }
+
+      return program;
+    }
+
+    function sourceForDaypart(source, daypart) {
+      let patched = source;
+      const replacements = {
+        evening: [
+          ["const float MORNING_MIX = 0.0;", "const float MORNING_MIX = 0.0;"],
+          ["const float EVENING_MIX = 1.0;", "const float EVENING_MIX = 1.0;"],
+          ["const float NIGHT_MIX = 0.0;", "const float NIGHT_MIX = 0.0;"],
+          ["#define TIME_MODE 0", "#define TIME_MODE 0"]
+        ],
+        morning: [
+          ["const float MORNING_MIX = 0.0;", "const float MORNING_MIX = 1.0;"],
+          ["const float EVENING_MIX = 1.0;", "const float EVENING_MIX = 0.0;"],
+          ["const float NIGHT_MIX = 0.0;", "const float NIGHT_MIX = 0.0;"],
+          ["#define TIME_MODE 0", "#define TIME_MODE 0"]
+        ],
+        night: [
+          ["const float MORNING_MIX = 0.0;", "const float MORNING_MIX = 0.0;"],
+          ["const float EVENING_MIX = 1.0;", "const float EVENING_MIX = 0.0;"],
+          ["const float NIGHT_MIX = 0.0;", "const float NIGHT_MIX = 1.0;"],
+          ["#define TIME_MODE 0", "#define TIME_MODE 0"]
+        ],
+        cycle: [
+          ["#define TIME_MODE 0", "#define TIME_MODE 1"]
+        ]
+      };
+
+      for (const [from, to] of replacements[daypart]) {
+        patched = patched.replace(from, to);
+      }
+
+      return patched;
+    }
+
+    function shaderSource(source, daypart) {
+      return `#version 300 es
+        precision highp float;
+        uniform sampler2D iChannel0;
+        uniform vec3 iResolution;
+        uniform float iTime;
+        uniform vec4 iDate;
+        out vec4 outColor;
+        ${sourceForDaypart(source, daypart)}
+        void main() {
+          vec2 ghosttyFragCoord = vec2(gl_FragCoord.x, iResolution.y - gl_FragCoord.y);
+          mainImage(outColor, ghosttyFragCoord);
+        }
+      `;
+    }
+
+    function makeTexture() {
+      const terminalCanvas = document.createElement("canvas");
+      terminalCanvas.width = 520;
+      terminalCanvas.height = 293;
+      const ctx = terminalCanvas.getContext("2d");
+      ctx.fillStyle = "#070b13";
+      ctx.fillRect(0, 0, terminalCanvas.width, terminalCanvas.height);
+
+      const grad = ctx.createLinearGradient(0, 0, terminalCanvas.width, terminalCanvas.height);
+      grad.addColorStop(0, "rgba(21, 29, 52, 0.36)");
+      grad.addColorStop(1, "rgba(4, 7, 14, 0.16)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, terminalCanvas.width, terminalCanvas.height);
+
+      ctx.font = "18px SFMono-Regular, Menlo, Consolas, monospace";
+      ctx.textBaseline = "top";
+      const lines = [
+        ["# Ghostty Aurora", "#b6f4d7"],
+        ["custom-shader-animation = true", "#d8deef"],
+        ["bin/ghostty-aurora list", "#d8deef"],
+        ["", "#d8deef"],
+        ["theme-dark -> balanced contrast", "#f3cda7"],
+        ["nebula     -> vivid preset", "#b9b6ff"],
+        ["minimal    -> daily calm", "#82e5c6"]
+      ];
+
+      lines.forEach(([text, color], index) => {
+        ctx.fillStyle = color;
+        ctx.fillText(text, 28, 28 + index * 30);
+      });
+
+      return terminalCanvas;
+    }
+
+    function createSharedRenderer() {
+      const renderCanvas = document.createElement("canvas");
+      renderCanvas.width = 520;
+      renderCanvas.height = 293;
+      const gl = renderCanvas.getContext("webgl2", { antialias: false, alpha: false });
+      if (!gl) {
+        throw new Error("WebGL2 is not available in this browser.");
+      }
+
+      const vertex = compile(gl, gl.VERTEX_SHADER, vertexSource);
+      const buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        -1, -1, 1, -1, -1, 1,
+        -1, 1, 1, -1, 1, 1
+      ]), gl.STATIC_DRAW);
+
+      const texture = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, makeTexture());
+
+      function createProgram(source, daypart) {
+        const fragment = compile(gl, gl.FRAGMENT_SHADER, shaderSource(source, daypart));
+        const program = link(gl, vertex, fragment);
+        gl.deleteShader(fragment);
+
+        return {
+          program,
+          resolution: gl.getUniformLocation(program, "iResolution"),
+          time: gl.getUniformLocation(program, "iTime"),
+          date: gl.getUniformLocation(program, "iDate"),
+          channel0: gl.getUniformLocation(program, "iChannel0")
+        };
+      }
+
+      function render(compiled, displayCanvas, time) {
+        gl.viewport(0, 0, renderCanvas.width, renderCanvas.height);
+        gl.useProgram(compiled.program);
+        gl.uniform3f(compiled.resolution, renderCanvas.width, renderCanvas.height, 1.0);
+        gl.uniform1f(compiled.time, time);
+        gl.uniform4f(compiled.date, 2026.0, 6.0, 14.0, 19.0 * 3600.0);
+        gl.uniform1i(compiled.channel0, 0);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.enableVertexAttribArray(0);
+        gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        const ctx = displayCanvas.getContext("2d");
+        ctx.clearRect(0, 0, displayCanvas.width, displayCanvas.height);
+        ctx.drawImage(renderCanvas, 0, 0, displayCanvas.width, displayCanvas.height);
+      }
+
+      return { createProgram, gl, render };
+    }
+
+    function makeRenderer(shared, canvas, source) {
+      let compiled;
+
+      function setDaypart(daypart) {
+        if (compiled) {
+          shared.gl?.deleteProgram?.(compiled.program);
+        }
+
+        compiled = shared.createProgram(source, daypart);
+      }
+
+      function render(time) {
+        shared.render(compiled, canvas, time);
+      }
+
+      setDaypart(activeDaypart);
+      return { setDaypart, render };
+    }
+
+    async function boot() {
+      const nodes = [...document.querySelectorAll("[data-variant]")];
+      const shared = createSharedRenderer();
+
+      for (const node of nodes) {
+        const variant = variants.find((item) => item.id === node.dataset.variant);
+        const response = await fetch(`../${variant.file}`);
+        if (!response.ok) {
+          throw new Error(`Unable to load ${variant.file}: ${response.status}`);
+        }
+
+        const source = await response.text();
+        const canvas = node.querySelector("canvas");
+        const renderer = makeRenderer(shared, canvas, source);
+        renderer.id = variant.id;
+        cards.push(renderer);
+      }
+
+      function renderAll(time) {
+        for (const card of cards) {
+          card.render(time);
+        }
+      }
+
+      function frame(now) {
+        startTime ||= now;
+        renderAll((now - startTime) / 1000);
+
+        if (activeDaypart === "cycle") {
+          frameHandle = requestAnimationFrame(frame);
+        } else {
+          frameHandle = null;
+        }
+      }
+
+      function renderCurrentMode() {
+        if (frameHandle) {
+          cancelAnimationFrame(frameHandle);
+          frameHandle = null;
+        }
+
+        startTime = 0;
+
+        if (activeDaypart === "cycle") {
+          frameHandle = requestAnimationFrame(frame);
+        } else {
+          renderAll(0.0);
+        }
+      }
+
+      window.renderGalleryCurrentMode = renderCurrentMode;
+      renderCurrentMode();
+      setStatus(`Compiled ${cards.length} variants in ${activeDaypart} mode.`, "ok");
+    }
+
+    daypartButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        activeDaypart = button.dataset.daypart;
+        daypartButtons.forEach((item) => {
+          item.setAttribute("aria-pressed", String(item === button));
+        });
+
+        try {
+          for (const card of cards) {
+            try {
+              card.setDaypart(activeDaypart);
+            } catch (error) {
+              throw new Error(`${card.id}: ${error.message}`);
+            }
+          }
+
+          window.renderGalleryCurrentMode?.();
+          setStatus(`Compiled ${cards.length} variants in ${activeDaypart} mode.`, "ok");
+        } catch (error) {
+          setStatus(error.message, "error");
+        }
+      });
+    });
+
+    boot().catch((error) => {
+      setStatus(error.message, "error");
+      console.error(error);
+    });
+  </script>
+</body>
+</html>
