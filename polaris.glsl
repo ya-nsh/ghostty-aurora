@@ -39,6 +39,13 @@ const float HAZE_STRENGTH = 0.085;
 const float STAR_INTENSITY = 0.0;
 const float NORTH_STAR_INTENSITY = 0.0;
 
+const vec3 MORNING_A = vec3(0.50, 0.86, 0.92);
+const vec3 MORNING_B = vec3(0.68, 0.78, 1.00);
+const vec3 EVENING_A = vec3(0.20, 0.88, 0.76);
+const vec3 EVENING_B = vec3(0.42, 0.50, 1.00);
+const vec3 NIGHT_A = vec3(0.05, 0.42, 0.40);
+const vec3 NIGHT_B = vec3(0.12, 0.14, 0.38);
+
 #define STARS_ENABLED 0
 #define POLARIS_MODE 1
 
@@ -80,23 +87,9 @@ float fbm(vec2 p) {
 }
 
 vec3 palette(float phase, vec3 mood) {
-    vec3 morningA = vec3(0.63, 0.96, 0.90);
-    vec3 morningB = vec3(1.00, 0.67, 0.45);
-    vec3 eveningA = vec3(0.28, 0.98, 0.72);
-    vec3 eveningB = vec3(0.52, 0.36, 1.00);
-    vec3 nightA = vec3(0.08, 0.52, 0.42);
-    vec3 nightB = vec3(0.18, 0.16, 0.50);
-
-    #if POLARIS_MODE == 1
-    eveningA = vec3(0.20, 0.88, 0.76);
-    eveningB = vec3(0.42, 0.50, 1.00);
-    nightA = vec3(0.05, 0.42, 0.40);
-    nightB = vec3(0.12, 0.14, 0.38);
-    #endif
-
-    vec3 morning = mix(morningA, morningB, phase);
-    vec3 evening = mix(eveningA, eveningB, phase);
-    vec3 night = mix(nightA, nightB, phase);
+    vec3 morning = mix(MORNING_A, MORNING_B, phase);
+    vec3 evening = mix(EVENING_A, EVENING_B, phase);
+    vec3 night = mix(NIGHT_A, NIGHT_B, phase);
 
     return morning * mood.x + evening * mood.y + night * mood.z;
 }

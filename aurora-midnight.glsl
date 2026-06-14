@@ -1,18 +1,18 @@
-// aurora-lite.glsl - generated from src/aurora.template.glsl.
-// Variant: Lite
+// aurora-midnight.glsl - generated from src/aurora.template.glsl.
+// Variant: Midnight
 //
 // Ghostty setup:
-//   custom-shader = /path/to/ghostty-aurora/aurora-lite.glsl
+//   custom-shader = /path/to/ghostty-aurora/aurora-midnight.glsl
 //   custom-shader-animation = true
 //
 // The shader is self-contained and samples iChannel0, the terminal surface,
 // so terminal text stays readable while the aurora sits mostly in the dark.
 
 // Overall brightness of the aurora overlay.
-const float AURORA_INTENSITY = 0.46;
+const float AURORA_INTENSITY = 0.42;
 
 // Motion and scale of the ribbon field.
-const float RIBBON_SPEED = 0.028;
+const float RIBBON_SPEED = 0.020;
 const float RIBBON_SCALE = 0.92;
 
 // Manual daypart mix used while Ghostty's iDate uniform is unavailable.
@@ -30,21 +30,21 @@ const float NIGHT_MIX = 0.0;
 #define TIME_MODE 0
 
 // Higher values protect bright text and glyph edges more aggressively.
-const float TEXT_PROTECT = 0.92;
+const float TEXT_PROTECT = 0.93;
 
 const int RIBBON_LAYERS = 3;
 const int FBM_OCTAVES = 3;
-const float CURTAIN_STRENGTH = 0.58;
-const float HAZE_STRENGTH = 0.070;
+const float CURTAIN_STRENGTH = 0.56;
+const float HAZE_STRENGTH = 0.055;
 const float STAR_INTENSITY = 0.0;
 const float NORTH_STAR_INTENSITY = 0.0;
 
-const vec3 MORNING_A = vec3(0.63, 0.96, 0.90);
-const vec3 MORNING_B = vec3(1.00, 0.67, 0.45);
-const vec3 EVENING_A = vec3(0.28, 0.98, 0.72);
-const vec3 EVENING_B = vec3(0.52, 0.36, 1.00);
-const vec3 NIGHT_A = vec3(0.08, 0.52, 0.42);
-const vec3 NIGHT_B = vec3(0.18, 0.16, 0.50);
+const vec3 MORNING_A = vec3(0.44, 0.76, 0.86);
+const vec3 MORNING_B = vec3(0.38, 0.50, 0.82);
+const vec3 EVENING_A = vec3(0.12, 0.52, 0.56);
+const vec3 EVENING_B = vec3(0.18, 0.24, 0.64);
+const vec3 NIGHT_A = vec3(0.03, 0.28, 0.30);
+const vec3 NIGHT_B = vec3(0.05, 0.08, 0.28);
 
 #define STARS_ENABLED 0
 #define POLARIS_MODE 0
