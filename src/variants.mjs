@@ -251,6 +251,26 @@ export const variants = [
     }
   }),
   variant({
+    id: "screenshot",
+    label: "Screenshot",
+    category: "core",
+    file: "aurora-screenshot.glsl",
+    description: "Dramatic showcase mode for screenshots, demos, and README media.",
+    performanceTier: "high",
+    values: {
+      AURORA_INTENSITY: "0.86",
+      RIBBON_SPEED: "0.036",
+      RIBBON_SCALE: "1.14",
+      TEXT_PROTECT: "0.84",
+      RIBBON_LAYERS: "6",
+      FBM_OCTAVES: "5",
+      CURTAIN_STRENGTH: "1.08",
+      HAZE_STRENGTH: "0.170",
+      STAR_INTENSITY: "0.060",
+      STARS_ENABLED: "1"
+    }
+  }),
+  variant({
     id: "arctic",
     label: "Arctic",
     category: "preset",

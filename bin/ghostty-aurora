@@ -23,6 +23,7 @@ function usage() {
     "  intensity get                Print the active intensity",
     "  intensity set N              Set a local intensity override",
     "  intensity reset              Remove the local intensity override",
+    "  showcase                     Use screenshot mode at showcase intensity",
     "",
     "After switching, reload Ghostty config. In this setup: cmd+s then r."
   ].join("\n");
@@ -263,6 +264,11 @@ try {
     } else {
       throw new Error("Expected intensity get, intensity set N, or intensity reset.");
     }
+  } else if (command === "showcase") {
+    const intensity = "0.85";
+    const file = await writeConfig("screenshot", intensity);
+    console.log(`Ghostty Aurora showcase mode set to screenshot (${file}) with intensity ${intensity}.`);
+    console.log("Reload Ghostty config to apply it.");
   } else {
     console.log(usage());
     process.exitCode = command ? 1 : 0;

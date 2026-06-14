@@ -21,6 +21,7 @@ Core:
 - `aurora.glsl`: balanced default and the recommended daily driver.
 - `aurora-rich.glsl`: deeper curtains and faint static stars.
 - `polaris.glsl`: cold no-star aurora with a darker polar palette.
+- `aurora-screenshot.glsl`: dramatic showcase mode for screenshots, demos, and README media.
 
 Presets:
 
@@ -58,6 +59,7 @@ Theme matched:
 | You use transparency | `theme-transparent` |
 | You use a light-ish theme | `theme-light` |
 | You want a stronger visual preset | `nebula`, `arctic`, or `solar` |
+| You are recording or taking screenshots | `screenshot` |
 
 Polaris is a separate shader file, not an in-terminal runtime toggle. Ghostty selects shaders through config, so switching variants means changing the configured shader path and reloading config.
 
@@ -108,6 +110,8 @@ bin/ghostty-aurora use minimal
 bin/ghostty-aurora use aurora
 bin/ghostty-aurora use rich
 bin/ghostty-aurora use polaris
+bin/ghostty-aurora use screenshot
+bin/ghostty-aurora showcase
 bin/ghostty-aurora use arctic
 bin/ghostty-aurora use winter
 bin/ghostty-aurora use theme-dark --intensity 0.45
@@ -130,6 +134,32 @@ bin/ghostty-aurora intensity reset
 ```
 
 `intensity set` writes `config/active.glsl`, patches only `AURORA_INTENSITY`, and points `config/ghostty-aurora.conf` at that local shader. `config/active.glsl` is ignored by git. Running `bin/ghostty-aurora use <variant>` without `--intensity` returns to the committed shader file for that variant.
+
+## Screenshot Mode
+
+The `screenshot` variant is intentionally more dramatic than the daily-driver variants. It uses stronger curtains, richer haze, and faint stars for demos, README media, and social screenshots.
+
+Use the committed shader directly:
+
+```sh
+bin/ghostty-aurora use screenshot
+```
+
+Or use the showcase shortcut, which selects screenshot mode with a local intensity override:
+
+```sh
+bin/ghostty-aurora showcase
+```
+
+To test this branch in Ghostty:
+
+```sh
+git checkout feature/screenshot-mode
+node scripts/build-variants.mjs
+bin/ghostty-aurora use screenshot
+```
+
+Reload Ghostty config after switching. For polished screenshots, use a dark terminal theme and a large Ghostty window so the aurora has room to breathe.
 
 ## Tuning
 
