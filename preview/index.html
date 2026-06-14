@@ -248,7 +248,8 @@
         out vec4 outColor;
         ${patched}
         void main() {
-          mainImage(outColor, gl_FragCoord.xy);
+          vec2 ghosttyFragCoord = vec2(gl_FragCoord.x, iResolution.y - gl_FragCoord.y);
+          mainImage(outColor, ghosttyFragCoord);
         }
       `;
     }
