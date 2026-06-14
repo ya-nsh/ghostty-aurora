@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ghostty Aurora Preview</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080a12;
+      --panel: #111625;
+      --text: #e8eefc;
+      --muted: #8d98b8;
+      --line: #27304a;
+      --accent: #77f0c3;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: radial-gradient(circle at 50% 0%, #18223d 0%, var(--bg) 46%, #05060a 100%);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(1120px, calc(100vw - 32px));
+      display: grid;
+      gap: 14px;
+    }
+
+    header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    button {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #12182a;
+      color: var(--text);
+      padding: 8px 11px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    button[aria-pressed="true"] {
+      border-color: color-mix(in srgb, var(--accent), white 16%);
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent), transparent 68%) inset;
+      color: #dfffee;
+    }
+
+    .stage {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #03050a;
+      aspect-ratio: 16 / 9;
+      min-height: 420px;
+      box-shadow: 0 22px 80px rgb(0 0 0 / 0.34);
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .status {
+      min-height: 20px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .status[data-state="ok"] {
+      color: var(--accent);
+    }
+
+    .status[data-state="error"] {
+      color: #ff8b9a;
+    }
+
+    @media (max-width: 720px) {
+      body {
+        place-items: start center;
+        padding-block: 18px;
+      }
+
+      header {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      .controls {
+        justify-content: flex-start;
+      }
+
+      .stage {
+        min-height: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Ghostty Aurora</h1>
+        <p>WebGL preview using the same shader file Ghostty loads.</p>
+      </div>
+      <div class="controls" role="group" aria-label="Preview mode">
+        <button type="button" data-mode="evening" aria-pressed="true">Evening</button>
+        <button type="button" data-mode="morning" aria-pressed="false">Morning</button>
+        <button type="button" data-mode="night" aria-pressed="false">Night</button>
+        <button type="button" data-mode="cycle" aria-pressed="false">Cycle</button>
+      </div>
+    </header>
+
+    <section class="stage" aria-label="Shader preview">
+      <canvas id="preview" width="1280" height="720"></canvas>
+    </section>
+
+    <div id="status" class="status">Loading aurora.glsl...</div>
+  </main>
+
+  <script>
+    const canvas = document.querySelector("#preview");
+    const statusEl = document.querySelector("#status");
+    const buttons = [...document.querySelectorAll("button[data-mode]")];
+
+    const vertexSource = `#version 300 es
+      in vec2 position;
+      out vec2 vUv;
+      void main() {
+        vUv = position * 0.5 + 0.5;
+        gl_Position = vec4(position, 0.0, 1.0);
+      }
+    `;
+
+    const terminalCanvas = document.createElement("canvas");
+    terminalCanvas.width = 1280;
+    terminalCanvas.height = 720;
+    const terminalCtx = terminalCanvas.getContext("2d");
+
+    function setStatus(text, state = "") {
+      statusEl.textContent = text;
+      statusEl.dataset.state = state;
+    }
+
+    function compile(gl, type, source) {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        const log = gl.getShaderInfoLog(shader);
+        gl.deleteShader(shader);
+        throw new Error(log);
+      }
+
+      return shader;
+    }
+
+    function link(gl, vertex, fragment) {
+      const program = gl.createProgram();
+      gl.attachShader(program, vertex);
+      gl.attachShader(program, fragment);
+      gl.linkProgram(program);
+
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+        const log = gl.getProgramInfoLog(program);
+        gl.deleteProgram(program);
+        throw new Error(log);
+      }
+
+      return program;
+    }
+
+    function shaderForMode(source, mode) {
+      let patched = source;
+
+      const replacements = {
+        morning: [
+          ["const float MORNING_MIX = 0.0;", "const float MORNING_MIX = 1.0;"],
+          ["const float EVENING_MIX = 1.0;", "const float EVENING_MIX = 0.0;"],
+          ["const float NIGHT_MIX = 0.0;", "const float NIGHT_MIX = 0.0;"],
+          ["#define TIME_MODE 0", "#define TIME_MODE 0"]
+        ],
+        evening: [
+          ["const float MORNING_MIX = 0.0;", "const float MORNING_MIX = 0.0;"],
+          ["const float EVENING_MIX = 1.0;", "const float EVENING_MIX = 1.0;"],
+          ["const float NIGHT_MIX = 0.0;", "const float NIGHT_MIX = 0.0;"],
+          ["#define TIME_MODE 0", "#define TIME_MODE 0"]
+        ],
+        night: [
+          ["const float MORNING_MIX = 0.0;", "const float MORNING_MIX = 0.0;"],
+          ["const float EVENING_MIX = 1.0;", "const float EVENING_MIX = 0.0;"],
+          ["const float NIGHT_MIX = 0.0;", "const float NIGHT_MIX = 1.0;"],
+          ["#define TIME_MODE 0", "#define TIME_MODE 0"]
+        ],
+        cycle: [
+          ["#define TIME_MODE 0", "#define TIME_MODE 1"]
+        ]
+      };
+
+      for (const [from, to] of replacements[mode]) {
+        patched = patched.replace(from, to);
+      }
+
+      return `#version 300 es
+        precision highp float;
+        uniform sampler2D iChannel0;
+        uniform vec3 iResolution;
+        uniform float iTime;
+        uniform vec4 iDate;
+        out vec4 outColor;
+        ${patched}
+        void main() {
+          mainImage(outColor, gl_FragCoord.xy);
+        }
+      `;
+    }
+
+    function drawTerminalTexture() {
+      const ctx = terminalCtx;
+      ctx.fillStyle = "#070b13";
+      ctx.fillRect(0, 0, terminalCanvas.width, terminalCanvas.height);
+
+      const grad = ctx.createLinearGradient(0, 0, terminalCanvas.width, terminalCanvas.height);
+      grad.addColorStop(0, "rgba(21, 29, 52, 0.38)");
+      grad.addColorStop(1, "rgba(4, 7, 14, 0.15)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, terminalCanvas.width, terminalCanvas.height);
+
+      ctx.font = "24px SFMono-Regular, Menlo, Consolas, monospace";
+      ctx.textBaseline = "top";
+      const lines = [
+        ["# Ghostty Aurora", "#b6f4d7"],
+        ["custom-shader = /path/to/ghostty-aurora/aurora.glsl", "#d8deef"],
+        ["custom-shader-animation = true", "#d8deef"],
+        ["", "#d8deef"],
+        ["morning -> soft light waves", "#f3cda7"],
+        ["evening -> purple / blue aurora", "#b9b6ff"],
+        ["night   -> darker low-motion glow", "#82e5c6"],
+        ["", "#d8deef"],
+        ["~/code/ghostty-aurora main $ vim aurora.glsl", "#8d98b8"],
+        ["const float AURORA_INTENSITY = 0.62;", "#d8deef"],
+        ["const float TEXT_PROTECT = 0.88;", "#d8deef"]
+      ];
+
+      lines.forEach(([text, color], index) => {
+        ctx.fillStyle = color;
+        ctx.fillText(text, 58, 54 + index * 42);
+      });
+    }
+
+    async function boot() {
+      const source = await fetch("../aurora.glsl").then((response) => {
+        if (!response.ok) {
+          throw new Error(`Unable to load aurora.glsl: ${response.status}`);
+        }
+        return response.text();
+      });
+
+      const gl = canvas.getContext("webgl2", { antialias: false, alpha: false });
+      if (!gl) {
+        throw new Error("WebGL2 is not available in this browser.");
+      }
+
+      const vertex = compile(gl, gl.VERTEX_SHADER, vertexSource);
+      const buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+        -1, -1, 1, -1, -1, 1,
+        -1, 1, 1, -1, 1, 1
+      ]), gl.STATIC_DRAW);
+
+      const texture = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, texture);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      drawTerminalTexture();
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, terminalCanvas);
+
+      let activeMode = "evening";
+      let program;
+      let locations;
+
+      function useMode(mode) {
+        const fragment = compile(gl, gl.FRAGMENT_SHADER, shaderForMode(source, mode));
+        const nextProgram = link(gl, vertex, fragment);
+
+        if (program) {
+          gl.deleteProgram(program);
+        }
+
+        program = nextProgram;
+        gl.useProgram(program);
+
+        const position = gl.getAttribLocation(program, "position");
+        gl.enableVertexAttribArray(position);
+        gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
+
+        locations = {
+          resolution: gl.getUniformLocation(program, "iResolution"),
+          time: gl.getUniformLocation(program, "iTime"),
+          date: gl.getUniformLocation(program, "iDate"),
+          channel0: gl.getUniformLocation(program, "iChannel0")
+        };
+
+        activeMode = mode;
+        buttons.forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.mode === activeMode));
+        });
+        setStatus(`Compiled aurora.glsl in ${mode} mode.`, "ok");
+      }
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          try {
+            useMode(button.dataset.mode);
+          } catch (error) {
+            setStatus(error.message, "error");
+            console.error(error);
+          }
+        });
+      });
+
+      useMode(activeMode);
+
+      function frame(ms) {
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.useProgram(program);
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.uniform1i(locations.channel0, 0);
+        gl.uniform3f(locations.resolution, canvas.width, canvas.height, 1);
+        gl.uniform1f(locations.time, ms * 0.001);
+        gl.uniform4f(locations.date, 2026, 6, 14, 20 * 3600);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    boot().catch((error) => {
+      setStatus(error.message, "error");
+      console.error(error);
+    });
+  </script>
+</body>
+</html>
