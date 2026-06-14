@@ -6,6 +6,12 @@ Ghostty Aurora paints soft procedural ribbons behind your terminal text. It ship
 
 ![Preview](preview/preview.svg)
 
+## Gallery
+
+![Ghostty Aurora gallery demo](demo/gallery-demo.gif)
+
+The gallery preview shows every generated shader variant with a shared daypart selector. A smaller video copy is available at [demo/gallery-demo.mp4](demo/gallery-demo.mp4), and a still image is available at [demo/gallery-preview.png](demo/gallery-preview.png).
+
 ## Variants
 
 Core:
