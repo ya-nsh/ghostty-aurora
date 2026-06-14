@@ -2,6 +2,9 @@
 *.log
 *.tmp
 *.swp
+config/active.glsl
+config/active.glsl.tmp
+config/ghostty-aurora.conf.tmp
 node_modules/
 dist/
 build/

@@ -104,6 +104,7 @@ bin/ghostty-aurora use rich
 bin/ghostty-aurora use polaris
 bin/ghostty-aurora use arctic
 bin/ghostty-aurora use winter
+bin/ghostty-aurora use theme-dark --intensity 0.45
 ```
 
 After switching, reload Ghostty config. In the local setup this repo was built for, that is:
@@ -111,6 +112,18 @@ After switching, reload Ghostty config. In the local setup this repo was built f
 ```text
 cmd+s then r
 ```
+
+## Local Intensity Overrides
+
+Use these when a variant is close, but a little too bright or too quiet for your theme:
+
+```sh
+bin/ghostty-aurora intensity get
+bin/ghostty-aurora intensity set 0.45
+bin/ghostty-aurora intensity reset
+```
+
+`intensity set` writes `config/active.glsl`, patches only `AURORA_INTENSITY`, and points `config/ghostty-aurora.conf` at that local shader. `config/active.glsl` is ignored by git. Running `bin/ghostty-aurora use <variant>` without `--intensity` returns to the committed shader file for that variant.
 
 ## Tuning
 
