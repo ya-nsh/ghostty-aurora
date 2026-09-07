@@ -334,7 +334,8 @@
       drawTerminalTexture();
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, terminalCanvas);
 
-      let activeVariant = "aurora";
+      const requestedVariant = new URLSearchParams(location.search).get("variant");
+      let activeVariant = Object.hasOwn(variants, requestedVariant) ? requestedVariant : "aurora";
       let activeDaypart = "evening";
       let activeSource = "";
       let program;
@@ -378,9 +379,12 @@
           button.setAttribute("aria-pressed", String(button.dataset.variant === activeVariant));
         });
         daypartButtons.forEach((button) => {
+          button.disabled = activeVariant.startsWith("silk");
           button.setAttribute("aria-pressed", String(button.dataset.daypart === activeDaypart));
         });
-        setStatus(`Compiled ${variants[activeVariant].file} in ${activeDaypart} mode.`, "ok");
+        setStatus(activeVariant.startsWith("silk")
+          ? `Compiled ${variants[activeVariant].file}. Silk uses a fixed champagne/lilac palette.`
+          : `Compiled ${variants[activeVariant].file} in ${activeDaypart} mode.`, "ok");
       }
 
       variantButtons.forEach((button) => {

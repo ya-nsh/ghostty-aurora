@@ -168,6 +168,26 @@ function variant({ values = {}, palette = palettes.aurora, ...metadata }) {
 
 export const variants = [
   variant({
+    id: "silk",
+    label: "Silk",
+    category: "core",
+    file: "silk.glsl",
+    template: "silk.template.glsl",
+    description: "Champagne and lilac satin folds, with gentle analytic motion.",
+    performanceTier: "low",
+    values: { AURORA_INTENSITY: "0.72", SILK_FOLDS: "4" }
+  }),
+  variant({
+    id: "silk-lite",
+    label: "Silk Lite",
+    category: "core",
+    file: "silk-lite.glsl",
+    template: "silk.template.glsl",
+    description: "Two satin folds for a calmer look and less shader work.",
+    performanceTier: "low",
+    values: { AURORA_INTENSITY: "0.60", SILK_FOLDS: "2" }
+  }),
+  variant({
     id: "lite",
     label: "Lite",
     category: "core",

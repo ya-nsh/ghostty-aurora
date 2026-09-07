@@ -1,6 +1,6 @@
 # Ghostty Aurora
 
-A subtle northern-lights shader set for [Ghostty](https://ghostty.org/) terminal backgrounds.
+Ambient shaders for [Ghostty](https://ghostty.org/) terminal backgrounds: northern lights and flowing satin folds.
 
 Ghostty Aurora paints soft procedural ribbons behind your terminal text. It ships multiple variants, preset packs, and seasonal modes as standalone GLSL files that only sample Ghostty's built-in `iChannel0` terminal texture.
 
@@ -12,7 +12,32 @@ Ghostty Aurora paints soft procedural ribbons behind your terminal text. It ship
 
 The gallery preview shows every generated shader variant with a shared daypart selector. A smaller video copy is available at [demo/gallery-demo.mp4](demo/gallery-demo.mp4), and a still image is available at [demo/gallery-preview.png](demo/gallery-preview.png).
 
+## Silk demo
+
+[Watch the 27-second Silk demo](demo/silk/silk-twitter.mp4) · [Portrait video](demo/silk/silk-twitter-portrait.mp4)
+
+The demo renders the shipped GLSL with sample terminal text and an original
+ambient score. It is an offscreen preview, not a native terminal recording.
+
 ## Variants
+
+### Silk
+
+Silk adds slow champagne and lilac folds behind terminal text. Its analytic
+wave field uses one terminal texture sample, no noise stack, and no feedback
+buffers. `silk-lite` reduces the four folds to two for less GPU work.
+
+![Silk terminal preview](demo/silk/silk-terminal.png)
+
+```sh
+bin/ghostty-aurora use silk
+bin/ghostty-aurora use silk-lite
+bin/ghostty-aurora use silk --intensity 0.5
+```
+
+Reload Ghostty config after switching. Silk has a fixed palette; the Aurora
+daypart controls do not apply. Open `preview/?variant=silk` in the local preview.
+See [Silk setup, video, and validation](docs/silk.md).
 
 Core:
 
@@ -21,6 +46,8 @@ Core:
 - `aurora.glsl`: balanced default and the recommended daily driver.
 - `aurora-rich.glsl`: deeper curtains and faint static stars.
 - `polaris.glsl`: cold no-star aurora with a darker polar palette.
+- `silk.glsl`: four flowing satin folds in champagne and lilac.
+- `silk-lite.glsl`: a quieter, cheaper two-fold Silk variant.
 
 Presets:
 

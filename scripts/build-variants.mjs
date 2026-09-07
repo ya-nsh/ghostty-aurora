@@ -6,7 +6,6 @@ import { fileURLToPath } from "node:url";
 import { variants } from "../src/variants.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const templatePath = path.join(root, "src", "aurora.template.glsl");
 
 function render(template, variant) {
   let output = template
@@ -25,9 +24,8 @@ function render(template, variant) {
   return output;
 }
 
-const template = await readFile(templatePath, "utf8");
-
 for (const variant of variants) {
+  const template = await readFile(path.join(root, "src", variant.template || "aurora.template.glsl"), "utf8");
   const output = render(template, variant);
   await writeFile(path.join(root, variant.file), output);
   console.log(`generated ${variant.file}`);
