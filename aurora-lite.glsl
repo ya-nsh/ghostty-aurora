@@ -9,7 +9,7 @@
 // so terminal text stays readable while the aurora sits mostly in the dark.
 
 // Overall brightness of the aurora overlay.
-const float AURORA_INTENSITY = 0.46;
+const float AURORA_INTENSITY = 0.40;
 
 // Motion and scale of the ribbon field.
 const float RIBBON_SPEED = 0.028;
@@ -35,7 +35,7 @@ const float TEXT_PROTECT = 0.92;
 const int RIBBON_LAYERS = 3;
 const int FBM_OCTAVES = 3;
 const float CURTAIN_STRENGTH = 0.58;
-const float HAZE_STRENGTH = 0.070;
+const float HAZE_STRENGTH = 0.040;
 const float STAR_INTENSITY = 0.0;
 const float NORTH_STAR_INTENSITY = 0.0;
 
@@ -136,21 +136,28 @@ vec3 currentMood(float t) {
 float ribbon(vec2 uv, float t, float layer, float nightCalm) {
     float speed = RIBBON_SPEED * mix(1.35, 0.45, nightCalm);
     float drift = t * speed * (0.75 + layer * 0.18);
-    vec2 p = vec2(uv.x * (2.0 + layer * 0.65) * RIBBON_SCALE + drift,
-                  uv.y * (2.8 + layer * 0.38) - layer * 3.1);
+    float stack = layer / max(float(RIBBON_LAYERS - 1), 1.0);
+    float wave = fbm(vec2(uv.x * (1.05 + layer * 0.16) * RIBBON_SCALE + drift * 0.42,
+                          layer * 6.8 + t * 0.010));
+    float shape = noise(vec2(uv.x * (2.2 + layer * 0.28) + drift * 0.16,
+                             layer * 13.1));
+    float fine = sat(shape * 0.72 + wave * 0.28);
 
-    float large = fbm(p + vec2(0.0, drift * 0.55));
-    float small = fbm(p * 2.2 - vec2(drift * 0.70, 0.0));
-    float center = 0.18 + layer * 0.095 + 0.18 * large;
-    float width = 0.055 + 0.020 * small;
-    float band = exp(-pow((uv.y - center) / width, 2.0));
+    float center = mix(0.34, 0.60, stack) + (wave - 0.5) * 0.12 + (shape - 0.5) * 0.045;
+    float width = 0.020 + 0.008 * fine + 0.004 * stack + 0.004 * shape;
+    float dist = (uv.y - center) / max(width, 0.001);
+    float core = exp(-dist * dist);
 
-    float curtainNoise = fbm(vec2(uv.x * (12.0 + layer * 4.0) - drift * 8.0,
-                                  layer * 9.0 + t * 0.025));
-    float curtains = pow(0.28 + 0.72 * curtainNoise, mix(2.6, 1.8, CURTAIN_STRENGTH));
-    float verticalFalloff = smoothstep(0.92, 0.15, uv.y) * smoothstep(-0.05, 0.20, uv.y);
+    float rayNoise = noise(vec2(uv.x * (42.0 + layer * 9.0) - drift * 10.0,
+                                layer * 11.0 + shape * 2.0 + t * 0.018));
+    float rayBase = 0.42 + 0.58 * rayNoise;
+    float raySoft = rayBase * rayBase;
+    float raySharp = raySoft * raySoft;
+    float rays = mix(raySharp, raySoft, CURTAIN_STRENGTH);
+    float veil = exp(-dist * dist * 0.18) * 0.070 * CURTAIN_STRENGTH;
+    float verticalFalloff = smoothstep(0.88, 0.24, uv.y) * smoothstep(0.08, 0.24, uv.y);
 
-    return band * curtains * verticalFalloff;
+    return (core * (0.68 + 0.32 * rays) + veil * rays) * verticalFalloff;
 }
 
 vec3 aurora(vec2 uv, float t, vec3 mood) {
@@ -160,13 +167,13 @@ vec3 aurora(vec2 uv, float t, vec3 mood) {
     for (int i = 0; i < RIBBON_LAYERS; i++) {
         float fi = float(i);
         float r = ribbon(uv, t, fi, mood.z);
-        float phase = fract(fi * 0.27 + fbm(vec2(uv.x * 1.4 + t * 0.01, fi)));
+        float phase = sat(0.16 + uv.x * 0.30 + fi * 0.11 + r * 0.08);
         color += palette(phase, mood) * r * (1.0 - fi * 0.10);
         glow += r;
     }
 
-    float upperHaze = smoothstep(0.88, 0.08, uv.y) * smoothstep(-0.05, 0.28, uv.y);
-    color += palette(0.18 + 0.08 * sin(t * 0.05), mood) * upperHaze * glow * HAZE_STRENGTH;
+    float upperHaze = smoothstep(0.78, 0.18, uv.y) * smoothstep(0.04, 0.30, uv.y);
+    color += palette(0.20 + 0.06 * sin(t * 0.05), mood) * upperHaze * sat(glow) * HAZE_STRENGTH;
 
     return color;
 }
@@ -203,13 +210,10 @@ vec3 stars(vec2 uv, float t) {
 
 float readabilityMask(vec2 uv, vec3 base) {
     float luma = dot(base, vec3(0.2126, 0.7152, 0.0722));
-    vec2 px = 1.0 / iResolution.xy;
-    float lx = dot(texture(iChannel0, uv + vec2(px.x, 0.0)).rgb, vec3(0.2126, 0.7152, 0.0722));
-    float ly = dot(texture(iChannel0, uv + vec2(0.0, px.y)).rgb, vec3(0.2126, 0.7152, 0.0722));
-    float edge = max(abs(luma - lx), abs(luma - ly));
+    float edge = fwidth(luma);
 
     float brightText = smoothstep(0.32, 0.82, luma);
-    float glyphEdge = smoothstep(0.025, 0.14, edge);
+    float glyphEdge = smoothstep(0.020, 0.10, edge);
     float protect = max(brightText, glyphEdge * TEXT_PROTECT);
 
     return 1.0 - sat(protect);
