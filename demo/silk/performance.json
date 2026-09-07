@@ -1,0 +1,42 @@
+{
+  "note": "Offscreen OpenGL shader draw + GPU synchronization; not native Ghostty FPS.",
+  "measurements": [
+    {
+      "variant": "silk",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "median_ms": 0.927,
+      "p95_ms": 1.755
+    },
+    {
+      "variant": "silk-lite",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "median_ms": 0.768,
+      "p95_ms": 1.589
+    },
+    {
+      "variant": "silk",
+      "resolution": [
+        3840,
+        2160
+      ],
+      "median_ms": 2.195,
+      "p95_ms": 2.833
+    },
+    {
+      "variant": "silk-lite",
+      "resolution": [
+        3840,
+        2160
+      ],
+      "median_ms": 1.43,
+      "p95_ms": 2.035
+    }
+  ],
+  "gpu": "Apple M1 Pro"
+}

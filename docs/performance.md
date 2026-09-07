@@ -4,6 +4,11 @@ Ghostty Aurora variants are single-pass shaders that sample only Ghostty's termi
 
 ## Cost Signals
 
+Silk uses a separate analytic template with no FBM. Its `SILK_FOLDS` constant
+is four in `silk` and two in `silk-lite`. Both use one terminal sample and
+derivatives to protect glyph edges. See [Silk validation](silk.md) for measured
+offscreen timings and the limits of those measurements.
+
 The main cost knobs are:
 
 - `RIBBON_LAYERS`: more layers means more ribbon and noise work per pixel.

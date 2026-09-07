@@ -1,0 +1,44 @@
+{
+  "footage": "Offscreen rendering of the shipped GLSL shader with demo terminal text",
+  "videos": [
+    {
+      "file": "silk-twitter.mp4",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "fps": 60,
+      "frames": 1620,
+      "duration_seconds": 27,
+      "size_bytes": 7525925,
+      "decode": "passed",
+      "audio": "AAC stereo / 48 kHz"
+    },
+    {
+      "file": "silk-twitter-portrait.mp4",
+      "resolution": [
+        1080,
+        1350
+      ],
+      "fps": 60,
+      "frames": 1620,
+      "duration_seconds": 27,
+      "size_bytes": 6116701,
+      "decode": "passed",
+      "audio": "AAC stereo / 48 kHz"
+    },
+    {
+      "file": "silk-twitter-upload.mp4",
+      "resolution": [
+        1080,
+        1350
+      ],
+      "fps": 30,
+      "frames": 810,
+      "duration_seconds": 27,
+      "size_bytes": 4555326,
+      "decode": "passed",
+      "audio": "AAC stereo / 48 kHz"
+    }
+  ]
+}

@@ -94,14 +94,14 @@ function defaultIntensity(variant) {
 async function patchIntensity(variant, intensity) {
   const sourcePath = path.join(root, variant.file);
   const source = await readFile(sourcePath, "utf8");
-  const patched = source.replace(
-    /^const float AURORA_INTENSITY = [0-9.]+;$/m,
-    `const float AURORA_INTENSITY = ${intensity};`
-  );
-
-  if (patched === source) {
+  const intensityPattern = /^const float AURORA_INTENSITY = [0-9.]+;$/m;
+  if (!intensityPattern.test(source)) {
     throw new Error(`Could not patch AURORA_INTENSITY in ${variant.file}.`);
   }
+  const patched = source.replace(
+    intensityPattern,
+    `const float AURORA_INTENSITY = ${intensity};`
+  );
 
   await writeAtomic(activeShaderPath, patched);
 }
