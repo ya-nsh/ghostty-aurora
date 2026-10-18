@@ -9,6 +9,11 @@ is four in `silk` and two in `silk-lite`. Both use one terminal sample and
 derivatives to protect glyph edges. See [Silk validation](silk.md) for measured
 offscreen timings and the limits of those measurements.
 
+Nocturne also uses its own analytic template with no FBM. `NOCTURNE_POOLS` is
+five in `nocturne` and three in `nocturne-lite`; `STAR_DENSITY` is zero in the
+lite variant, which skips the star cell entirely. See
+[Nocturne validation](nocturne.md) for measured offscreen timings.
+
 The main cost knobs are:
 
 - `RIBBON_LAYERS`: more layers means more ribbon and noise work per pixel.

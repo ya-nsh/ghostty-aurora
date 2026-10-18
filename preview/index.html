@@ -378,12 +378,14 @@
         variantButtons.forEach((button) => {
           button.setAttribute("aria-pressed", String(button.dataset.variant === activeVariant));
         });
+        // Only the shared aurora template has daypart controls; Silk and Nocturne use fixed palettes.
+        const fixedPalette = Boolean(variants[activeVariant].template);
         daypartButtons.forEach((button) => {
-          button.disabled = activeVariant.startsWith("silk");
+          button.disabled = fixedPalette;
           button.setAttribute("aria-pressed", String(button.dataset.daypart === activeDaypart));
         });
-        setStatus(activeVariant.startsWith("silk")
-          ? `Compiled ${variants[activeVariant].file}. Silk uses a fixed champagne/lilac palette.`
+        setStatus(fixedPalette
+          ? `Compiled ${variants[activeVariant].file}. ${variants[activeVariant].label} uses a fixed palette.`
           : `Compiled ${variants[activeVariant].file} in ${activeDaypart} mode.`, "ok");
       }
 
