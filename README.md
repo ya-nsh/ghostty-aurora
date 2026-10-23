@@ -1,6 +1,6 @@
 # Ghostty Aurora
 
-Ambient shaders for [Ghostty](https://ghostty.org/) terminal backgrounds: northern lights, flowing satin folds, and a twilight sky.
+Ambient shaders for [Ghostty](https://ghostty.org/) terminal backgrounds: northern lights, flowing satin folds, a twilight sky, and a dark starry night.
 
 Ghostty Aurora paints soft procedural ribbons behind your terminal text. It ships multiple variants, preset packs, and seasonal modes as standalone GLSL files that only sample Ghostty's built-in `iChannel0` terminal texture.
 
@@ -61,6 +61,26 @@ Like Silk, Nocturne has a fixed palette and ignores the daypart controls. Open
 `preview/?variant=nocturne` in the local preview. See
 [Nocturne setup and validation](docs/nocturne.md).
 
+### Stargaze
+
+Stargaze keeps the terminal dark and fills it with a night sky: three depths of
+amber, white, and blue stars that twinkle slowly as the sky turns, a dusty Milky
+Way, a meteor now and then, and a few fireflies drifting in the warm glow of a
+hearth along the bottom edge. `stargaze-lite` keeps just the stars and a softer
+hearth.
+
+![Stargaze terminal preview](demo/stargaze/stargaze-terminal.png)
+
+```sh
+bin/ghostty-aurora use stargaze
+bin/ghostty-aurora use stargaze-lite
+bin/ghostty-aurora use stargaze --intensity 0.7
+```
+
+Stargaze has a fixed palette and ignores the daypart controls. Open
+`preview/?variant=stargaze` in the local preview. See
+[Stargaze setup and validation](docs/stargaze.md).
+
 Core:
 
 - `aurora-lite.glsl`: calmer, cheaper, and extra conservative around text.
@@ -73,6 +93,8 @@ Core:
 - `nocturne.glsl`: twilight pools of indigo, jade, and plum over an ember horizon, with faint stars.
 - `nocturne-lite.glsl`: three pools and no stars for a calmer, cheaper Nocturne.
 - `nocturne-dusk.glsl`: Nocturne held near one composition, with an indigo sky, plum glow, and lower-right ember horizon.
+- `stargaze.glsl`: a dark, slowly turning night sky with twinkling stars, a dusty Milky Way, rare meteors, and fireflies over a warm hearth glow.
+- `stargaze-lite.glsl`: just the stars and a faint hearth glow.
 
 Presets:
 

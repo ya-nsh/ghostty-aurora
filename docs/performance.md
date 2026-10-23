@@ -14,6 +14,12 @@ five in `nocturne` and three in `nocturne-lite`; `STAR_DENSITY` is zero in the
 lite variant, which skips the star cell entirely. See
 [Nocturne validation](nocturne.md) for measured offscreen timings.
 
+Stargaze is the costliest fixed-palette shader: three star layers, a value-noise
+Milky Way, and a firefly loop. The noise is skipped outside the band and the
+firefly loop is skipped above the bottom strip. `stargaze-lite` turns off the
+Milky Way, meteors, and fireflies, which brings it to about Silk's cost. See
+[Stargaze validation](stargaze.md).
+
 The main cost knobs are:
 
 - `RIBBON_LAYERS`: more layers means more ribbon and noise work per pixel.

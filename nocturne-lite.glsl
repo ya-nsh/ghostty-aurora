@@ -44,7 +44,7 @@ float stars(vec2 p, float time) {
     vec2 star = cell + 0.2 + 0.6 * h.xy;
     float d = length(grid - star);
     float pixel = CELLS / max(iResolution.y, 1.0);
-    float core = smoothstep(pixel * 2.2, 0.0, d);
+    float core = 1.0 - smoothstep(0.0, pixel * 2.2, d);
     float halo = exp2(-d * d * 90.0) * 0.35;
     float twinkle = 0.55 + 0.45 * sin(time * (0.7 + 1.6 * h.x) + h.y * 6.2831);
     float height = smoothstep(-0.18, 0.42, p.y);

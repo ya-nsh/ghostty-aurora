@@ -9,7 +9,7 @@ root=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('silk_renderer', root/'scripts/render-silk.py')
 module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
 
-for variant in ['silk','silk-lite','nocturne','nocturne-lite','nocturne-dusk']:
+for variant in ['silk','silk-lite','nocturne','nocturne-lite','nocturne-dusk','stargaze','stargaze-lite']:
     r=module.Renderer(variant,(640,400))
     texture=r.textures[1]
     # Include bright text, saturated ANSI colors, a light theme, and transparent pixels.
@@ -21,7 +21,10 @@ for variant in ['silk','silk-lite','nocturne','nocturne-lite','nocturne-dusk']:
         assert np.max(np.abs(result.astype(int)-pixels.astype(int)))<=1,(variant,value,'modified protected input')
     pixels[:]=(28,32,33,255); texture.write(pixels.tobytes())
     first=np.asarray(r.still(0)); later=np.asarray(r.still(5))
-    assert np.mean(np.abs(first.astype(float)-later.astype(float)))>1,(variant,'no visible motion')
+    # Visible motion means a real share of pixels changes by at least two levels. A mean over the
+    # frame would miss sparse motion such as twinkling stars, which leaves most pixels unchanged.
+    changed=np.abs(first[:,:,:3].astype(int)-later[:,:,:3].astype(int)).max(axis=2)>=2
+    assert changed.mean()>0.05,(variant,'no visible motion')
     assert np.max(first[:,:,:3])<120,(variant,'background too bright')
     assert np.all(first[:,:,3]==255),(variant,'alpha changed')
     # Zero intensity must be an identity operation, including dark text.

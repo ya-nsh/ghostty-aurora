@@ -218,6 +218,26 @@ export const variants = [
     values: { AURORA_INTENSITY: "0.80", NOCTURNE_POOLS: "5", STAR_DENSITY: "0.16", NOCTURNE_ANCHOR: "160.0" }
   }),
   variant({
+    id: "stargaze",
+    label: "Stargaze",
+    category: "core",
+    file: "stargaze.glsl",
+    template: "stargaze.template.glsl",
+    description: "A dark, slowly turning night sky: twinkling stars, a dusty Milky Way, rare meteors, and fireflies over a warm hearth glow.",
+    performanceTier: "low",
+    values: { AURORA_INTENSITY: "1.0", MILKY_WAY: "1.0", SHOOTING_CHANCE: "0.45", FIREFLIES: "5", HEARTH: "1.0" }
+  }),
+  variant({
+    id: "stargaze-lite",
+    label: "Stargaze Lite",
+    category: "core",
+    file: "stargaze-lite.glsl",
+    template: "stargaze.template.glsl",
+    description: "Just the stars and a faint hearth glow: no Milky Way, meteors, or fireflies.",
+    performanceTier: "low",
+    values: { AURORA_INTENSITY: "1.0", MILKY_WAY: "0.0", SHOOTING_CHANCE: "0.0", FIREFLIES: "0", HEARTH: "0.7" }
+  }),
+  variant({
     id: "lite",
     label: "Lite",
     category: "core",
