@@ -3,7 +3,9 @@
 Nocturne is an MIT-licensed Ghostty shader that paints a slow twilight sky
 behind terminal text: drifting pools of indigo, jade, and plum light, a warm
 ember glow rising from below the frame, and faint stars that only appear where
-the sky is dark. Nocturne Lite uses three pools and no stars. Both are
+the sky is dark. Nocturne Lite uses three pools and no stars. Nocturne Dusk
+holds one composition (the bottom-right frame of the contact sheet below) and
+sways within a few seconds of it instead of drifting through the full cycle. Both are
 standalone GLSL files that need only `iChannel0`, `iResolution`, and `iTime`,
 and both leave the terminal's alpha and bright or saturated text intact.
 
@@ -14,6 +16,7 @@ and both leave the terminal's alpha and bright or saturated text intact.
 ```sh
 bin/ghostty-aurora use nocturne
 bin/ghostty-aurora use nocturne-lite
+bin/ghostty-aurora use nocturne-dusk
 bin/ghostty-aurora use nocturne --intensity 0.6
 ```
 
@@ -39,6 +42,8 @@ regenerate with `node scripts/build-variants.mjs`.
 | `NOCTURNE_SPEED` | Drift speed. Pools take roughly a minute and a half to wander across; the edge warp moves faster. |
 | `NOCTURNE_POOLS` | `3` (indigo, jade, ember), `4` (+ plum), or `5` (+ a high indigo wash). Controls actual work. |
 | `STAR_DENSITY` | Fraction of sky cells that hold a star. `0.0` disables stars and their cost. |
+| `NOCTURNE_ANCHOR` | Seconds into the drift to hold around. Negative drifts freely (`nocturne`, `nocturne-lite`); `160.0` gives `nocturne-dusk`. |
+| `NOCTURNE_WANDER` | How far, in seconds of drift, an anchored variant sways each way. One full sway takes `2π × NOCTURNE_WANDER` seconds. |
 | `TEXT_PROTECT` | How strongly glyph edges are excluded from the light. |
 
 ## How it works
@@ -74,7 +79,7 @@ nor a measure of Ghostty's Metal pipeline, compositor, or battery cost.
 Raw data: `demo/nocturne/performance.json`. Timings vary with GPU load and
 power mode.
 
-`python scripts/verify-silk.py` covers Nocturne and Nocturne Lite alongside
+`python scripts/verify-silk.py` covers all three Nocturne variants alongside
 Silk: bright and saturated colors, light backgrounds, and transparent pixels are
 untouched, motion is visible, alpha is preserved, and zero intensity is an
 identity. It also compiles every generated GLSL file. Regenerate the stills

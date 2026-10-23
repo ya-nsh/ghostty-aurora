@@ -45,13 +45,15 @@ Nocturne is a slow twilight sky: drifting pools of indigo, jade, and plum light
 over a warm ember horizon, with faint stars that only show where the sky is
 dark. It uses one terminal sample and analytic gaussian pools with no noise
 stack, and adds sub-LSB dither so long, dark gradients do not band.
-`nocturne-lite` drops to three pools with no stars.
+`nocturne-lite` drops to three pools with no stars. `nocturne-dusk` holds the
+indigo, plum, and lower-right ember composition and sways gently around it.
 
 ![Nocturne terminal preview](demo/nocturne/nocturne-terminal.png)
 
 ```sh
 bin/ghostty-aurora use nocturne
 bin/ghostty-aurora use nocturne-lite
+bin/ghostty-aurora use nocturne-dusk
 bin/ghostty-aurora use nocturne --intensity 0.6
 ```
 
@@ -70,6 +72,7 @@ Core:
 - `silk-lite.glsl`: a quieter, cheaper two-fold Silk variant.
 - `nocturne.glsl`: twilight pools of indigo, jade, and plum over an ember horizon, with faint stars.
 - `nocturne-lite.glsl`: three pools and no stars for a calmer, cheaper Nocturne.
+- `nocturne-dusk.glsl`: Nocturne held near one composition, with an indigo sky, plum glow, and lower-right ember horizon.
 
 Presets:
 

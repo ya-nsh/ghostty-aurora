@@ -39,7 +39,7 @@ test('Nocturne switches between variants and keeps intensity overrides working',
   const dir = await mkdtemp(path.join(tmpdir(), 'nocturne-switcher-'));
   try {
     for (const name of ['bin', 'src']) await cp(path.join(root, name), path.join(dir, name), { recursive: true });
-    for (const name of ['nocturne.glsl', 'nocturne-lite.glsl']) await cp(path.join(root, name), path.join(dir, name));
+    for (const name of ['nocturne.glsl', 'nocturne-lite.glsl', 'nocturne-dusk.glsl']) await cp(path.join(root, name), path.join(dir, name));
     await mkdir(path.join(dir, 'config'));
     const run = (...args) => execFileSync(process.execPath, [path.join(dir, 'bin/ghostty-aurora'), ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
     run('use', 'nocturne');
@@ -54,6 +54,9 @@ test('Nocturne switches between variants and keeps intensity overrides working',
     assert.equal(run('current'), 'nocturne-lite');
     assert.equal(run('intensity', 'get'), '0.66');
     assert.match(await readFile(path.join(dir, 'config/ghostty-aurora.conf'), 'utf8'), /custom-shader = .*nocturne-lite\.glsl/);
+    run('use', 'nocturne-dusk');
+    assert.equal(run('current'), 'nocturne-dusk');
+    assert.equal(run('intensity', 'get'), '0.80');
   } finally {
     await rm(dir, { recursive: true, force: true });
   }
