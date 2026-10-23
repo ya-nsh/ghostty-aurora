@@ -188,6 +188,26 @@ export const variants = [
     values: { AURORA_INTENSITY: "0.60", SILK_FOLDS: "2" }
   }),
   variant({
+    id: "nocturne",
+    label: "Nocturne",
+    category: "core",
+    file: "nocturne.glsl",
+    template: "nocturne.template.glsl",
+    description: "Twilight pools of indigo, jade, and plum over an ember horizon, with faint stars.",
+    performanceTier: "low",
+    values: { AURORA_INTENSITY: "0.80", NOCTURNE_POOLS: "5", STAR_DENSITY: "0.16" }
+  }),
+  variant({
+    id: "nocturne-lite",
+    label: "Nocturne Lite",
+    category: "core",
+    file: "nocturne-lite.glsl",
+    template: "nocturne.template.glsl",
+    description: "Three pools and no stars for a calmer, cheaper Nocturne.",
+    performanceTier: "low",
+    values: { AURORA_INTENSITY: "0.66", NOCTURNE_POOLS: "3", STAR_DENSITY: "0.0" }
+  }),
+  variant({
     id: "lite",
     label: "Lite",
     category: "core",

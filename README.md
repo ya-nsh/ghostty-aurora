@@ -1,6 +1,6 @@
 # Ghostty Aurora
 
-Ambient shaders for [Ghostty](https://ghostty.org/) terminal backgrounds: northern lights and flowing satin folds.
+Ambient shaders for [Ghostty](https://ghostty.org/) terminal backgrounds: northern lights, flowing satin folds, and a twilight sky.
 
 Ghostty Aurora paints soft procedural ribbons behind your terminal text. It ships multiple variants, preset packs, and seasonal modes as standalone GLSL files that only sample Ghostty's built-in `iChannel0` terminal texture.
 
@@ -39,6 +39,26 @@ Reload Ghostty config after switching. Silk has a fixed palette; the Aurora
 daypart controls do not apply. Open `preview/?variant=silk` in the local preview.
 See [Silk setup, video, and validation](docs/silk.md).
 
+### Nocturne
+
+Nocturne is a slow twilight sky: drifting pools of indigo, jade, and plum light
+over a warm ember horizon, with faint stars that only show where the sky is
+dark. It uses one terminal sample and analytic gaussian pools with no noise
+stack, and adds sub-LSB dither so long, dark gradients do not band.
+`nocturne-lite` drops to three pools with no stars.
+
+![Nocturne terminal preview](demo/nocturne/nocturne-terminal.png)
+
+```sh
+bin/ghostty-aurora use nocturne
+bin/ghostty-aurora use nocturne-lite
+bin/ghostty-aurora use nocturne --intensity 0.6
+```
+
+Like Silk, Nocturne has a fixed palette and ignores the daypart controls. Open
+`preview/?variant=nocturne` in the local preview. See
+[Nocturne setup and validation](docs/nocturne.md).
+
 Core:
 
 - `aurora-lite.glsl`: calmer, cheaper, and extra conservative around text.
@@ -48,6 +68,8 @@ Core:
 - `polaris.glsl`: cold no-star aurora with a darker polar palette.
 - `silk.glsl`: four flowing satin folds in champagne and lilac.
 - `silk-lite.glsl`: a quieter, cheaper two-fold Silk variant.
+- `nocturne.glsl`: twilight pools of indigo, jade, and plum over an ember horizon, with faint stars.
+- `nocturne-lite.glsl`: three pools and no stars for a calmer, cheaper Nocturne.
 
 Presets:
 
