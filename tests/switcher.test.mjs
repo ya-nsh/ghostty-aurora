@@ -35,11 +35,11 @@ test('Silk switches, handles default/zero intensity, rejects invalid values, and
   }
 });
 
-test('Nocturne switches between variants and keeps intensity overrides working', async () => {
+test('Nocturne and Stargaze switch between variants and keep intensity overrides working', async () => {
   const dir = await mkdtemp(path.join(tmpdir(), 'nocturne-switcher-'));
   try {
     for (const name of ['bin', 'src']) await cp(path.join(root, name), path.join(dir, name), { recursive: true });
-    for (const name of ['nocturne.glsl', 'nocturne-lite.glsl', 'nocturne-dusk.glsl']) await cp(path.join(root, name), path.join(dir, name));
+    for (const name of ['nocturne.glsl', 'nocturne-lite.glsl', 'nocturne-dusk.glsl', 'stargaze.glsl', 'stargaze-lite.glsl', 'stargaze-galaxy.glsl']) await cp(path.join(root, name), path.join(dir, name));
     await mkdir(path.join(dir, 'config'));
     const run = (...args) => execFileSync(process.execPath, [path.join(dir, 'bin/ghostty-aurora'), ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
     run('use', 'nocturne');
@@ -57,6 +57,13 @@ test('Nocturne switches between variants and keeps intensity overrides working',
     run('use', 'nocturne-dusk');
     assert.equal(run('current'), 'nocturne-dusk');
     assert.equal(run('intensity', 'get'), '0.80');
+    run('use', 'stargaze', '--intensity', '0.7');
+    assert.equal(run('current'), 'stargaze');
+    assert.equal(run('intensity', 'get'), '0.7');
+    run('use', 'stargaze-lite');
+    assert.equal(run('intensity', 'get'), '1.0');
+    run('use', 'stargaze-galaxy');
+    assert.equal(run('current'), 'stargaze-galaxy');
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

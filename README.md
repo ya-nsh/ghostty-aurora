@@ -1,6 +1,6 @@
 # Ghostty Aurora
 
-Ambient shaders for [Ghostty](https://ghostty.org/) terminal backgrounds: northern lights, flowing satin folds, and a twilight sky.
+Ambient shaders for [Ghostty](https://ghostty.org/) terminal backgrounds: northern lights, flowing satin folds, a twilight sky, and a true-black starry night.
 
 Ghostty Aurora paints soft procedural ribbons behind your terminal text. It ships multiple variants, preset packs, and seasonal modes as standalone GLSL files that only sample Ghostty's built-in `iChannel0` terminal texture.
 
@@ -61,6 +61,27 @@ Like Silk, Nocturne has a fixed palette and ignores the daypart controls. Open
 `preview/?variant=nocturne` in the local preview. See
 [Nocturne setup and validation](docs/nocturne.md).
 
+### Stargaze
+
+Stargaze is a night sky for true-black (OLED) terminals. Stars in amber, white,
+and blue twinkle slowly at three depths as the sky turns, a meteor crosses now
+and then, and a few fireflies drift over a low ember glow at the bottom edge.
+Empty sky stays exactly black, so OLED pixels stay off. `stargaze-lite` is only
+the stars. `stargaze-galaxy` adds a dusty Milky Way and a fuller hearth glow.
+
+![Stargaze terminal preview](demo/stargaze/stargaze-terminal.png)
+
+```sh
+bin/ghostty-aurora use stargaze
+bin/ghostty-aurora use stargaze-lite
+bin/ghostty-aurora use stargaze-galaxy
+```
+
+A shader can only add light, so true black also needs `background = 000000` in
+your Ghostty config. Stargaze has a fixed palette and ignores the daypart
+controls. Open `preview/?variant=stargaze` in the local preview. See
+[Stargaze setup and validation](docs/stargaze.md).
+
 Core:
 
 - `aurora-lite.glsl`: calmer, cheaper, and extra conservative around text.
@@ -73,6 +94,9 @@ Core:
 - `nocturne.glsl`: twilight pools of indigo, jade, and plum over an ember horizon, with faint stars.
 - `nocturne-lite.glsl`: three pools and no stars for a calmer, cheaper Nocturne.
 - `nocturne-dusk.glsl`: Nocturne held near one composition, with an indigo sky, plum glow, and lower-right ember horizon.
+- `stargaze.glsl`: true-black OLED night sky with slowly turning stars, rare meteors, and fireflies over a low ember glow.
+- `stargaze-lite.glsl`: only the stars, on true black.
+- `stargaze-galaxy.glsl`: Stargaze with a dusty Milky Way and a fuller hearth glow.
 
 Presets:
 
