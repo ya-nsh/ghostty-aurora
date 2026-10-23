@@ -7,10 +7,12 @@ const float TEXT_PROTECT = 1.0;
 // Radians per second the sky turns around a pole above the window. Slow enough to notice
 // only when you look back after a while.
 const float SKY_DRIFT = 0.0006;
-const float MILKY_WAY = 1.0;
+const float MILKY_WAY = 0.0;
 const float SHOOTING_CHANCE = 0.45;
 const int FIREFLIES = 5;
-const float HEARTH = 1.0;
+const float HEARTH = 0.6;
+// Faint indigo depth toward the top. Zero keeps empty sky at true black for OLED screens.
+const float SKY_TINT = 0.0;
 
 float hash12(vec2 p) {
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -134,7 +136,7 @@ vec3 stargazeSky(vec2 uv, float time) {
 
     // Night deepens toward the top: a barely-there indigo so the dark has some depth.
     float height = smoothstep(-0.55, 0.55, p.y);
-    vec3 light = vec3(0.020, 0.026, 0.060) * height;
+    vec3 light = vec3(0.020, 0.026, 0.060) * height * SKY_TINT;
 
     float across = 0.0;
     float band = MILKY_WAY > 0.0 ? milkyWay(sky, across) * MILKY_WAY : 0.0;
@@ -153,7 +155,9 @@ vec3 stargazeSky(vec2 uv, float time) {
 
     // The hearth: a low ember-and-rose glow along the bottom that breathes like a fire.
     float flicker = 0.88 + 0.08 * sin(time * 1.30) + 0.04 * sin(time * 2.71 + 1.3);
+    // The glow ends by the lower third, so the sky above it stays true black.
     float rise = exp2(-(p.y + 0.5) * 7.0) * (0.80 + 0.20 * sin(p.x * 2.2 + time * 0.12));
+    rise *= 1.0 - smoothstep(-0.36, -0.12, p.y);
     vec3 hearth = mix(vec3(0.72, 0.30, 0.07), vec3(0.50, 0.16, 0.22), smoothstep(-0.48, -0.22, p.y));
     light += hearth * rise * flicker * 0.17 * HEARTH;
 
@@ -173,6 +177,11 @@ vec3 stargazeSky(vec2 uv, float time) {
         float glow = exp2(-r2 / (pixel * pixel * 5.0)) + exp2(-r2 / 0.0011) * 0.22;
         light += vec3(1.0, 0.70, 0.28) * glow * pulse * 0.60;
     }
+
+    // Black floor: the faint tails of halos, the band, and the hearth sit a level or two above
+    // black, where they are invisible but would keep OLED pixels lit. Subtract them away.
+    const float BLACK_FLOOR = 2.0 / 255.0;
+    light = max(light - BLACK_FLOOR, 0.0);
 
     // Highlight knee: faint sky passes through untouched, while star and firefly cores
     // roll off smoothly toward HIGHLIGHT_LIMIT so no point reads as a stray glyph.
@@ -197,7 +206,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float background = 1.0 - smoothstep(0.16, 0.40, peak);
     float mask = background * (1.0 - glyph);
     vec3 light = stargazeSky(uv, iTime) * AURORA_INTENSITY;
-    // Sub-LSB dither keeps the long, dark gradients from banding on 8-bit surfaces.
-    float dither = (hash12(fragCoord) - 0.5) / 255.0 * step(0.0001, AURORA_INTENSITY);
+    // Sub-LSB dither keeps the long, dark gradients from banding on 8-bit surfaces. It fades
+    // out where no light is added, so empty sky stays exactly the terminal colour and true
+    // black stays switched off on OLED screens.
+    float lit = smoothstep(0.5 / 255.0, 2.0 / 255.0, max(light.r, max(light.g, light.b)));
+    float dither = (hash12(fragCoord) - 0.5) / 255.0 * lit;
     fragColor = vec4(terminal.rgb + (light + dither) * mask * terminal.a, terminal.a);
 }

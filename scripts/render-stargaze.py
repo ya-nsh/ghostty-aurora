@@ -20,7 +20,8 @@ spec.loader.exec_module(silk)
 
 
 def terminal(size):
-    im = Image.new('RGBA', size, '#1c2021')
+    # Stargaze is tuned for a true-black (OLED) terminal background.
+    im = Image.new('RGBA', size, '#000000')
     d = ImageDraw.Draw(im)
     x, y = 75, 72
     rows = [
@@ -48,6 +49,8 @@ def terminal(size):
 def renderer(variant, size):
     """Silk's renderer with Stargaze sample text. `variant` is a .glsl path relative to the repo."""
     r = silk.Renderer(variant, size)
+    # Silk's blank texture is its grey background; Stargaze's is true black.
+    r.textures[0].write(Image.new('RGBA', size, '#000000').tobytes())
     r.textures[1].write(terminal(size).tobytes())
     return r
 
@@ -57,8 +60,12 @@ def stills():
     r = renderer('stargaze', (1600, 960))
     r.still(30).save(OUT / 'stargaze-terminal.png')
     r.still(30, False).save(OUT / 'stargaze-detail.png')
-    frames = [r.still(t).convert('RGB') for t in (3, 30, 90)]
+    frames = [r.still(3).convert('RGB')]
     r.ctx.release()
+    for variant in ('stargaze-lite', 'stargaze-galaxy'):
+        r = renderer(variant, (1600, 960))
+        frames.append(r.still(30).convert('RGB'))
+        r.ctx.release()
     # Real meteors are rare by design, so the fourth frame uses a copy of the shader that
     # always launches one at the start of each slot, then catches it mid-flight.
     meteor = OUT / '.meteor.glsl'
@@ -80,7 +87,7 @@ def stills():
 def benchmark():
     result = {'note': 'Offscreen OpenGL shader draw + GPU synchronization; not native Ghostty FPS.', 'measurements': []}
     for size in [(1920, 1080), (3840, 2160)]:
-        for variant in ['stargaze', 'stargaze-lite', 'silk']:
+        for variant in ['stargaze', 'stargaze-lite', 'stargaze-galaxy', 'silk']:
             r = renderer(variant, size)
             result['gpu'] = r.ctx.info['GL_RENDERER']
             for i in range(45):

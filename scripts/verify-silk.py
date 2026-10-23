@@ -9,7 +9,7 @@ root=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('silk_renderer', root/'scripts/render-silk.py')
 module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
 
-for variant in ['silk','silk-lite','nocturne','nocturne-lite','nocturne-dusk','stargaze','stargaze-lite']:
+for variant in ['silk','silk-lite','nocturne','nocturne-lite','nocturne-dusk','stargaze','stargaze-lite','stargaze-galaxy']:
     r=module.Renderer(variant,(640,400))
     texture=r.textures[1]
     # Include bright text, saturated ANSI colors, a light theme, and transparent pixels.
@@ -40,6 +40,18 @@ for variant in ['silk','silk-lite','nocturne','nocturne-lite','nocturne-dusk','s
     got=np.frombuffer(r.fbo.read(components=4),dtype=np.uint8).reshape(400,640,4)[::-1]
     assert np.max(np.abs(got.astype(int)-pixels.astype(int)))<=1,(variant,'zero intensity is not identity')
     print(f'{variant}: protected colors, light theme, alpha, animation, zero-intensity checks passed')
+    r.ctx.release()
+
+# Stargaze is built for true-black OLED backgrounds: empty sky must stay exactly black.
+# Star halos are a fixed size in pixels, so this small frame has a lower black share than a
+# full window (about 73% and 96% at 1600 x 960); the minimums leave a small margin.
+for variant,minimum in [('stargaze',0.6),('stargaze-lite',0.85)]:
+    r=module.Renderer(variant,(640,400))
+    pixels=np.zeros((400,640,4),dtype=np.uint8); pixels[:,:,3]=255
+    r.textures[1].write(pixels.tobytes())
+    black=np.mean(np.asarray(r.still(30))[:,:,:3].max(axis=2)==0)
+    assert black>=minimum,(variant,'true black share',black)
+    print(f'{variant}: {black:.0%} of pixels stay true black on an OLED background')
     r.ctx.release()
 
 r=module.Renderer()

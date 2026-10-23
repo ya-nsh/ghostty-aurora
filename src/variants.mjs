@@ -223,9 +223,9 @@ export const variants = [
     category: "core",
     file: "stargaze.glsl",
     template: "stargaze.template.glsl",
-    description: "A dark, slowly turning night sky: twinkling stars, a dusty Milky Way, rare meteors, and fireflies over a warm hearth glow.",
+    description: "True-black night sky for OLED: slowly turning stars, rare meteors, and fireflies over a low ember glow.",
     performanceTier: "low",
-    values: { AURORA_INTENSITY: "1.0", MILKY_WAY: "1.0", SHOOTING_CHANCE: "0.45", FIREFLIES: "5", HEARTH: "1.0" }
+    values: { AURORA_INTENSITY: "1.0", MILKY_WAY: "0.0", SHOOTING_CHANCE: "0.45", FIREFLIES: "5", HEARTH: "0.6", SKY_TINT: "0.0" }
   }),
   variant({
     id: "stargaze-lite",
@@ -233,9 +233,19 @@ export const variants = [
     category: "core",
     file: "stargaze-lite.glsl",
     template: "stargaze.template.glsl",
-    description: "Just the stars and a faint hearth glow: no Milky Way, meteors, or fireflies.",
+    description: "Only the stars, on true black.",
     performanceTier: "low",
-    values: { AURORA_INTENSITY: "1.0", MILKY_WAY: "0.0", SHOOTING_CHANCE: "0.0", FIREFLIES: "0", HEARTH: "0.7" }
+    values: { AURORA_INTENSITY: "1.0", MILKY_WAY: "0.0", SHOOTING_CHANCE: "0.0", FIREFLIES: "0", HEARTH: "0.0", SKY_TINT: "0.0" }
+  }),
+  variant({
+    id: "stargaze-galaxy",
+    label: "Stargaze Galaxy",
+    category: "core",
+    file: "stargaze-galaxy.glsl",
+    template: "stargaze.template.glsl",
+    description: "Stargaze with a dusty Milky Way across the black sky and a fuller hearth glow.",
+    performanceTier: "medium",
+    values: { AURORA_INTENSITY: "1.0", MILKY_WAY: "1.0", SHOOTING_CHANCE: "0.45", FIREFLIES: "5", HEARTH: "1.0", SKY_TINT: "0.0" }
   }),
   variant({
     id: "lite",

@@ -7,8 +7,8 @@
         1920,
         1080
       ],
-      "median_ms": 1.26,
-      "p95_ms": 2.157
+      "median_ms": 1.28,
+      "p95_ms": 2.082
     },
     {
       "variant": "stargaze-lite",
@@ -16,8 +16,17 @@
         1920,
         1080
       ],
-      "median_ms": 0.743,
-      "p95_ms": 1.725
+      "median_ms": 0.73,
+      "p95_ms": 1.618
+    },
+    {
+      "variant": "stargaze-galaxy",
+      "resolution": [
+        1920,
+        1080
+      ],
+      "median_ms": 1.375,
+      "p95_ms": 2.589
     },
     {
       "variant": "silk",
@@ -25,8 +34,8 @@
         1920,
         1080
       ],
-      "median_ms": 0.858,
-      "p95_ms": 1.871
+      "median_ms": 0.794,
+      "p95_ms": 1.67
     },
     {
       "variant": "stargaze",
@@ -34,8 +43,8 @@
         3840,
         2160
       ],
-      "median_ms": 4.534,
-      "p95_ms": 5.14
+      "median_ms": 3.128,
+      "p95_ms": 4.507
     },
     {
       "variant": "stargaze-lite",
@@ -43,8 +52,17 @@
         3840,
         2160
       ],
-      "median_ms": 1.979,
-      "p95_ms": 2.653
+      "median_ms": 1.987,
+      "p95_ms": 3.265
+    },
+    {
+      "variant": "stargaze-galaxy",
+      "resolution": [
+        3840,
+        2160
+      ],
+      "median_ms": 4.595,
+      "p95_ms": 8.405
     },
     {
       "variant": "silk",
@@ -52,8 +70,8 @@
         3840,
         2160
       ],
-      "median_ms": 2.386,
-      "p95_ms": 2.911
+      "median_ms": 2.128,
+      "p95_ms": 3.589
     }
   ],
   "gpu": "Apple M1 Pro"
