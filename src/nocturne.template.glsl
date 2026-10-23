@@ -7,6 +7,9 @@ const float NOCTURNE_SPEED = 0.12;
 const float TEXT_PROTECT = 1.0;
 const int NOCTURNE_POOLS = @NOCTURNE_POOLS@;
 const float STAR_DENSITY = @STAR_DENSITY@;
+// Seconds into the drift to hold the composition around; negative drifts freely forever.
+const float NOCTURNE_ANCHOR = @NOCTURNE_ANCHOR@;
+const float NOCTURNE_WANDER = 12.0;
 
 float hash12(vec2 p) {
     vec3 p3 = fract(vec3(p.xyx) * 0.1031);
@@ -48,11 +51,21 @@ float stars(vec2 p, float time) {
     return (core + halo) * twinkle * height * (0.45 + 0.55 * h.y);
 }
 
+// Anchored variants sway within NOCTURNE_WANDER seconds of one moment instead of
+// drifting away from it. sin(x / W) * W peaks at the free-running speed, so motion
+// feels the same; one full sway takes 2 * pi * W seconds.
+float sceneTime(float time) {
+    if (NOCTURNE_ANCHOR < 0.0) {
+        return time;
+    }
+    return NOCTURNE_ANCHOR + NOCTURNE_WANDER * sin(time / NOCTURNE_WANDER);
+}
+
 vec3 nocturneSky(vec2 uv, float time) {
     float aspect = iResolution.x / max(iResolution.y, 1.0);
     // Ghostty's fragCoord starts at the top-left, so flip y to make the sky point up.
     vec2 p = vec2((uv.x - 0.5) * aspect, 0.5 - uv.y);
-    float t = time * NOCTURNE_SPEED;
+    float t = sceneTime(time) * NOCTURNE_SPEED;
     float w = 0.5 * aspect;
 
     // Two soft sine warps give the pools an ink-in-water edge without noise octaves.

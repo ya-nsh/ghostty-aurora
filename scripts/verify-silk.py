@@ -9,7 +9,7 @@ root=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('silk_renderer', root/'scripts/render-silk.py')
 module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
 
-for variant in ['silk','silk-lite','nocturne','nocturne-lite']:
+for variant in ['silk','silk-lite','nocturne','nocturne-lite','nocturne-dusk']:
     r=module.Renderer(variant,(640,400))
     texture=r.textures[1]
     # Include bright text, saturated ANSI colors, a light theme, and transparent pixels.

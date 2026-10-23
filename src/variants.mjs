@@ -195,7 +195,7 @@ export const variants = [
     template: "nocturne.template.glsl",
     description: "Twilight pools of indigo, jade, and plum over an ember horizon, with faint stars.",
     performanceTier: "low",
-    values: { AURORA_INTENSITY: "0.80", NOCTURNE_POOLS: "5", STAR_DENSITY: "0.16" }
+    values: { AURORA_INTENSITY: "0.80", NOCTURNE_POOLS: "5", STAR_DENSITY: "0.16", NOCTURNE_ANCHOR: "-1.0" }
   }),
   variant({
     id: "nocturne-lite",
@@ -205,7 +205,17 @@ export const variants = [
     template: "nocturne.template.glsl",
     description: "Three pools and no stars for a calmer, cheaper Nocturne.",
     performanceTier: "low",
-    values: { AURORA_INTENSITY: "0.66", NOCTURNE_POOLS: "3", STAR_DENSITY: "0.0" }
+    values: { AURORA_INTENSITY: "0.66", NOCTURNE_POOLS: "3", STAR_DENSITY: "0.0", NOCTURNE_ANCHOR: "-1.0" }
+  }),
+  variant({
+    id: "nocturne-dusk",
+    label: "Nocturne Dusk",
+    category: "core",
+    file: "nocturne-dusk.glsl",
+    template: "nocturne.template.glsl",
+    description: "Nocturne held near one composition: indigo sky, plum glow, and an ember horizon at lower right.",
+    performanceTier: "low",
+    values: { AURORA_INTENSITY: "0.80", NOCTURNE_POOLS: "5", STAR_DENSITY: "0.16", NOCTURNE_ANCHOR: "160.0" }
   }),
   variant({
     id: "lite",
